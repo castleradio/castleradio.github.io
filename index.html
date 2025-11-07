@@ -84,6 +84,7 @@
     .noise-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
+      /* ✅ Corregido: faltaba 'data:' al inicio */
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       opacity: 0.04;
       pointer-events: none;
@@ -152,6 +153,8 @@
       max-width: 440px;
       margin: 1.5rem auto;
       padding: 0 1rem;
+      /* ✅ Capa de seguridad contra overflow */
+      overflow: hidden;
     }
 
     .cyberdeck {
@@ -165,6 +168,8 @@
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.5), inset 0 0 12px rgba(0, 10, 20, 0.6);
       font-family: 'Share Tech Mono', monospace;
       font-size: 14px;
+      /* ✅ Crucial: evitar que se expanda más allá de su contenedor */
+      box-sizing: border-box;
     }
 
     .hud {
@@ -189,17 +194,14 @@
     }
     @keyframes blink-green { 0%, 90% { opacity: 1; } 95%, 100% { opacity: 0.2; } }
 
-    /* ✅ CORREGIDO: height:auto + límites verticales para evitar overflow horizontal */
+    /* ✅ Restaurado: altura FIJA (como original) */
     .song-info {
-      /* altura flexible: 1 línea (60px) o 2 líneas (≈80px) */
-      min-height: 60px;
-      max-height: 84px;
-      height: auto;
+      height: 64px; /* ✅ fijo, no cambia */
       display: flex;
       align-items: center;
       gap: 14px;
       margin: 14px 0;
-      padding: 8px 10px; /* ✅ más padding vertical para compensar height:auto */
+      padding: 0 10px;
       background: rgba(0, 5, 15, 0.4);
       border-radius: 4px;
       overflow: hidden;
@@ -209,7 +211,6 @@
       position: relative;
     }
 
-    /* ✅ AUMENTADO: portada de 44px → 56px */
     #sonic_art {
       width: 56px;
       height: 56px;
@@ -245,6 +246,7 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
+      /* ✅ Corregido: faltaba 'data:' */
       background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='distort'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='1'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='8' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23distort)' opacity='0.04'/%3E%3C/svg%3E");
       opacity: 0.8;
       pointer-events: none;
@@ -279,29 +281,25 @@
       opacity: 0.2;
     }
 
-    /* ✅ 🔥 CORREGIDO: Permitir múltiples líneas y evitar overflow horizontal */
+    /* ✅ CORREGIDO: Título de UNA SOLA LÍNEA, con truncado limpio */
     #sonic_title {
       flex: 1;
-      min-width: 0; /* ✅ CRUCIAL: permite que el flex-item se encoja */
+      min-width: 0; /* ✅ ES CLAVE: permite que flex-item se encoja */
       font-size: 15px;
       font-family: 'Share Tech Mono', monospace;
       color: var(--blue);
-      line-height: 1.35;
+      white-space: nowrap; /* ✅ una sola línea */
+      overflow: hidden;    /* ✅ corta visualmente */
+      text-overflow: ellipsis; /* ✅ muestra "..." */
+      line-height: 1.4;
       position: relative;
       transform-origin: center;
-      
-      /* ✅ Permitir envoltura suave */
-      white-space: normal; /* ✅ era 'nowrap' → causa overflow */
-      overflow-wrap: break-word;
-      word-break: break-word;
-      overflow: hidden;
     }
 
     .cyber-glitch {
       position: relative;
-      display: inline-block;
-      /* ✅ Evitar que inline-block cause ancho mínimo excesivo */
-      max-width: 100%;
+      display: block; /* ✅ block para que ocupe 100% del espacio disponible */
+      width: 100%;
     }
 
     .cyber-glitch::before,
@@ -313,6 +311,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      white-space: nowrap; /* ✅ también aquí */
+      text-overflow: ellipsis;
     }
 
     .cyber-glitch::before {
@@ -528,17 +528,13 @@
       100% { opacity: 0.4; }
     }
 
-    /* ✅ Ajustes mobile para título adaptable */
+    /* ✅ Ajustes mobile: altura fija, centrado, sin cambios de tamaño */
     @media (max-width: 768px) {
       .glitch { font-size: 4.2rem; letter-spacing: 3px; }
       .castle-player { padding: 0 0.8rem; margin: 1rem auto; }
       .header { padding: 1.2rem 0.8rem; }
 
-      .song-info {
-        min-height: 56px;
-        max-height: 78px;
-        padding: 6px 8px;
-      }
+      .song-info { height: 60px; } /* ✅ fijo */
       #sonic_art { width: 52px; height: 52px; }
       #sonic_title { font-size: 14px; }
     }
@@ -547,16 +543,9 @@
       .glitch { font-size: 3rem; }
       .cyberdeck { padding: 14px; }
 
-      .song-info {
-        min-height: 52px;
-        max-height: 72px;
-        padding: 6px 6px;
-      }
+      .song-info { height: 56px; } /* ✅ fijo */
       #sonic_art { width: 48px; height: 48px; }
-      #sonic_title { 
-        font-size: 13px;
-        line-height: 1.3;
-      }
+      #sonic_title { font-size: 13px; }
       .footer { padding: 0.8rem; font-size: 0.8rem; }
     }
 
