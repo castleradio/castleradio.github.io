@@ -528,36 +528,70 @@
       100% { opacity: 0.4; }
     }
 
-    /* ✅ Ajustes mobile para título adaptable */
+    /* ✅ Ajustes mobile: título más grande + reproductor más presente */
     @media (max-width: 768px) {
-      .glitch { font-size: 4.2rem; letter-spacing: 3px; }
-      .castle-player { padding: 0 0.8rem; margin: 1rem auto; }
-      .header { padding: 1.2rem 0.8rem; }
+      .glitch { 
+        font-size: 5rem; /* ↑ de 4.2rem a 5rem */
+        letter-spacing: 4px; 
+      }
+      .castle-player { 
+        padding: 0 1rem; 
+        margin: 0.8rem auto; 
+        max-width: 94vw; /* ↑ ocupa más ancho */
+      }
+      .cyberdeck { 
+        padding: 20px; /* ↑ más padding */
+        font-size: 14.5px; /* ligera mejora legibilidad */
+      }
+      .header { 
+        padding: 1.4rem 0.8rem; 
+      }
 
       .song-info {
-        min-height: 56px;
-        max-height: 78px;
-        padding: 6px 8px;
+        min-height: 60px;
+        max-height: 84px;
+        padding: 8px 12px; /* ↑ padding horizontal */
       }
-      #sonic_art { width: 52px; height: 52px; }
-      #sonic_title { font-size: 14px; }
+      #sonic_art { 
+        width: 56px; 
+        height: 56px; 
+      }
+      #sonic_title { 
+        font-size: 15px; /* ↑ de 14px */
+      }
     }
 
     @media (max-width: 480px) {
-      .glitch { font-size: 3rem; }
-      .cyberdeck { padding: 14px; }
-
+      .glitch { 
+        font-size: 4.4rem; /* ↑ de 3rem a 4.4rem */
+        letter-spacing: 3px; 
+      }
+      .cyberdeck { 
+        padding: 18px; 
+        font-size: 14px;
+      }
       .song-info {
-        min-height: 52px;
-        max-height: 72px;
-        padding: 6px 6px;
+        min-height: 58px;
+        max-height: 80px;
+        gap: 12px; /* ↑ espacio entre arte y texto */
+        padding: 8px 10px;
       }
-      #sonic_art { width: 48px; height: 48px; }
+      #sonic_art { 
+        width: 52px; 
+        height: 52px; 
+      }
       #sonic_title { 
-        font-size: 13px;
-        line-height: 1.3;
+        font-size: 14px; 
+        line-height: 1.35;
       }
-      .footer { padding: 0.8rem; font-size: 0.8rem; }
+      .one-btn { 
+        height: 60px; /* ↑ más alto */
+        font-size: 16px; /* ↑ más legible */
+      }
+      .footer { 
+        padding: 1rem 0.5rem; 
+        font-size: 0.85rem; 
+      }
     }
 
     @media (max-width: 1024px) {
@@ -617,11 +651,11 @@
     <p>© 2025 CASTLE • <span class="pulse">ON AIR</span></p>
   </footer>
 
-  <script id='sonic_js' data-port='8008' src='https://sonic.sistemahost.es/cp/widgets.js?r=477'></script>
+  <script id='sonic_js' data-port='8008' src='  https://sonic.sistemahost.es/cp/widgets.js?r=477'></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const STREAM_URL = 'https://sonic.sistemahost.es/8008/stream';
+      const STREAM_URL = '  https://sonic.sistemahost.es/8008/stream  ';
       let audio = null;
       let audioContext = null;
       let analyser = null;
@@ -840,3 +874,4 @@
   </script>
 </body>
 </html>
+
