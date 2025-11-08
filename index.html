@@ -651,11 +651,11 @@
     <p>© 2025 CASTLE • <span class="pulse">ON AIR</span></p>
   </footer>
 
-  <script id='sonic_js' data-port='8008' src='  https://sonic.sistemahost.es/cp/widgets.js?r=477'></script>
+  <script id='sonic_js' data-port='8008' src='    https://sonic.sistemahost.es/cp/widgets.js?r=477'></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const STREAM_URL = '  https://sonic.sistemahost.es/8008/stream  ';
+      const STREAM_URL = '    https://sonic.sistemahost.es/8008/stream    ';
       let audio = null;
       let audioContext = null;
       let analyser = null;
@@ -666,8 +666,8 @@
       let lastGlitchTime = 0;
 
       const lasers = Array.from(document.querySelectorAll('.laser'));
-      const laserCooldown = 120;
-      let lastLaserTime = 0;
+      let lastLaserTrigger = 0;
+      const MIN_LASER_INTERVAL = 60; // Evita activaciones múltiples en golpes muy cercanos
 
       const toggleBtn = document.getElementById('toggleBtn');
       const volSlider = document.getElementById('volSlider');
@@ -703,40 +703,34 @@
         analyser.connect(audioContext.destination);
       }
 
-      function triggerRandomLasers(intensity) {
+      function triggerRandomLasersOnBeat(intensity) {
         const now = Date.now();
-        if ((now - lastLaserTime) < laserCooldown) return;
-        lastLaserTime = now;
+        if (now - lastLaserTrigger < MIN_LASER_INTERVAL) return;
+        lastLaserTrigger = now;
 
-        const count = intensity > 0.8 ? 3 : (intensity > 0.65 ? 2 : 1);
+        // Elegir 1 a 3 láseres al azar
+        const count = Math.floor(Math.random() * 3) + 1; // 1, 2 o 3
         const shuffled = [...lasers].sort(() => 0.5 - Math.random());
         const selectedLasers = shuffled.slice(0, count);
 
-        const baseDuration = 40 + intensity * 60;
-        const maxOpacity = Math.min(1, 0.4 + intensity * 0.7);
+        const duration = 50 + intensity * 50; // 50ms a 100ms
+        const maxOpacity = Math.min(1, 0.5 + intensity * 0.7);
 
-        selectedLasers.forEach((laser, idx) => {
-          const delay = idx * (10 + Math.random() * 20);
-          const duration = baseDuration * (0.8 + Math.random() * 0.4);
+        selectedLasers.forEach(laser => {
+          laser.style.opacity = maxOpacity.toString();
+          const spread = intensity * (0.8 + Math.random() * 0.4);
+          const blueGlow = 0.7 + intensity * 0.3;
+          const pinkGlow = 0.5 + intensity * 0.2;
+          laser.style.boxShadow = `
+            0 0 ${15 + spread * 50}px rgba(0, 243, 255, ${blueGlow}),
+            0 0 ${30 + spread * 80}px rgba(255, 0, 200, ${pinkGlow}),
+            0 0 ${60 + spread * 100}px rgba(5, 255, 160, ${0.3 + intensity * 0.2})
+          `;
 
-          laser.style.opacity = '0';
           setTimeout(() => {
-            laser.style.opacity = maxOpacity.toString();
-            const spread = intensity * (0.8 + Math.random() * 0.4);
-            const blueGlow = 0.7 + intensity * 0.3;
-            const pinkGlow = 0.5 + intensity * 0.2;
-            laser.style.boxShadow = `
-              0 0 ${15 + spread * 50}px rgba(0, 243, 255, ${blueGlow}),
-              0 0 ${30 + spread * 80}px rgba(255, 0, 200, ${pinkGlow}),
-              0 0 ${60 + spread * 100}px rgba(5, 255, 160, ${0.3 + intensity * 0.2})
-            `;
-            setTimeout(() => {
-              laser.style.opacity = '0';
-              setTimeout(() => {
-                laser.style.boxShadow = '0 0 20px rgba(0, 243, 255, 0.9), 0 0 40px rgba(255, 0, 200, 0.7)';
-              }, 50);
-            }, duration);
-          }, delay);
+            laser.style.opacity = '0';
+            laser.style.boxShadow = '0 0 20px rgba(0, 243, 255, 0.9), 0 0 40px rgba(255, 0, 200, 0.7)';
+          }, duration);
         });
       }
 
@@ -744,17 +738,20 @@
         if (!isPlaying || !analyser) return;
         analyser.getByteFrequencyData(dataArray);
 
+        // Energía en graves (bins 0-5 = ~20-150Hz, rango típico de bombo)
         let bassEnergy = 0;
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < 6; i++) {
           bassEnergy += dataArray[i];
         }
-        const bassAvg = bassEnergy / 14;
-        const normalizedBass = Math.min(1, bassAvg / 200);
+        const bassAvg = bassEnergy / 6;
+        const normalizedBass = bassAvg / 255;
 
-        if (normalizedBass > 0.52) {
-          triggerRandomLasers(normalizedBass);
+        // Umbral ajustado para detectar golpes claros
+        if (normalizedBass > 0.42) {
+          triggerRandomLasersOnBeat(normalizedBass);
         }
 
+        // Actualizar visualizador
         const step = Math.floor(dataArray.length / barCount);
         for (let i = 0; i < barCount; i++) {
           let sum = 0;
