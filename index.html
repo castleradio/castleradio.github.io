@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>CASTLE</title>
   <link rel="icon" href="assets/favicon.png" type="image/png">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@300;400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@300;400&family=Share+Tech+Mono&family=Material+Icons+Outlined&display=swap" rel="stylesheet">
   <style>
     :root {
       --black: #0a0a0f;
@@ -189,27 +189,22 @@
     }
     @keyframes blink-green { 0%, 90% { opacity: 1; } 95%, 100% { opacity: 0.2; } }
 
-    /* ✅ CORREGIDO: height:auto + límites verticales para evitar overflow horizontal */
     .song-info {
-      /* altura flexible: 1 línea (60px) o 2 líneas (≈80px) */
-      min-height: 60px;
-      max-height: 84px;
+      min-height: 72px;
+      max-height: 96px;
       height: auto;
       display: flex;
       align-items: center;
       gap: 14px;
       margin: 14px 0;
-      padding: 8px 10px; /* ✅ más padding vertical para compensar height:auto */
+      padding: 8px 10px;
       background: rgba(0, 5, 15, 0.4);
       border-radius: 4px;
       overflow: hidden;
       width: 100%;
-      border: 1px solid rgba(0, 150, 200, 0.25);
-      box-shadow: inset 0 0 10px rgba(0, 10, 20, 0.6);
       position: relative;
     }
 
-    /* ✅ AUMENTADO: portada de 44px → 56px */
     #sonic_art {
       width: 56px;
       height: 56px;
@@ -221,7 +216,6 @@
       overflow: hidden;
       position: relative;
       box-shadow: 0 0 6px rgba(0, 200, 255, 0.5);
-      border: 1px solid rgba(0, 200, 255, 0.35);
       flex-shrink: 0;
       animation: pulse-border 2.5s infinite alternate;
     }
@@ -279,28 +273,27 @@
       opacity: 0.2;
     }
 
-    /* ✅ 🔥 CORREGIDO: Permitir múltiples líneas y evitar overflow horizontal */
     #sonic_title {
       flex: 1;
-      min-width: 0; /* ✅ CRUCIAL: permite que el flex-item se encoja */
+      min-width: 0;
       font-size: 15px;
       font-family: 'Share Tech Mono', monospace;
       color: var(--blue);
       line-height: 1.35;
       position: relative;
-      transform-origin: center;
-      
-      /* ✅ Permitir envoltura suave */
-      white-space: normal; /* ✅ era 'nowrap' → causa overflow */
+      white-space: normal;
       overflow-wrap: break-word;
       word-break: break-word;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
 
     .cyber-glitch {
       position: relative;
       display: inline-block;
-      /* ✅ Evitar que inline-block cause ancho mínimo excesivo */
       max-width: 100%;
     }
 
@@ -313,6 +306,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      text-align: center;
     }
 
     .cyber-glitch::before {
@@ -406,8 +400,6 @@
       position: relative;
       overflow: hidden;
       width: 100%;
-      border: 1px solid rgba(0, 150, 200, 0.2);
-      box-shadow: inset 0 0 8px rgba(0, 10, 20, 0.5);
     }
 
     .fft-bar {
@@ -480,15 +472,24 @@
     .volume {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 12px;
+      margin-top: 12px;
     }
 
-    .volume label {
-      font-size: 11px;
-      letter-spacing: 1px;
+    .volume-icon {
+      font-family: 'Material Icons Outlined';
+      font-size: 24px;
       color: var(--blue);
-      font-family: 'Share Tech Mono', monospace;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .volume-icon.mute {
+      color: var(--red);
+    }
+
+    .volume-icon:hover {
+      text-shadow: 0 0 8px currentColor;
     }
 
     .slider {
@@ -528,53 +529,51 @@
       100% { opacity: 0.4; }
     }
 
-    /* ✅ Ajustes mobile: título más grande + reproductor más presente */
     @media (max-width: 768px) {
       .glitch { 
-        font-size: 5rem; /* ↑ de 4.2rem a 5rem */
+        font-size: 5rem;
         letter-spacing: 4px; 
       }
       .castle-player { 
         padding: 0 1rem; 
         margin: 0.8rem auto; 
-        max-width: 94vw; /* ↑ ocupa más ancho */
+        max-width: 94vw;
       }
       .cyberdeck { 
-        padding: 20px; /* ↑ más padding */
-        font-size: 14.5px; /* ligera mejora legibilidad */
+        padding: 20px;
+        font-size: 14.5px;
       }
       .header { 
         padding: 1.4rem 0.8rem; 
       }
-
-      .song-info {
-        min-height: 60px;
-        max-height: 84px;
-        padding: 8px 12px; /* ↑ padding horizontal */
+      .song-info { 
+        min-height: 72px; 
+        max-height: 96px; 
+        padding: 8px 12px; 
       }
       #sonic_art { 
         width: 56px; 
         height: 56px; 
       }
       #sonic_title { 
-        font-size: 15px; /* ↑ de 14px */
+        font-size: 15px; 
       }
     }
 
     @media (max-width: 480px) {
       .glitch { 
-        font-size: 4.4rem; /* ↑ de 3rem a 4.4rem */
+        font-size: 4.4rem;
         letter-spacing: 3px; 
       }
       .cyberdeck { 
         padding: 18px; 
         font-size: 14px;
       }
-      .song-info {
-        min-height: 58px;
-        max-height: 80px;
-        gap: 12px; /* ↑ espacio entre arte y texto */
-        padding: 8px 10px;
+      .song-info { 
+        min-height: 68px; 
+        max-height: 92px; 
+        gap: 12px; 
+        padding: 8px 10px; 
       }
       #sonic_art { 
         width: 52px; 
@@ -582,11 +581,11 @@
       }
       #sonic_title { 
         font-size: 14px; 
-        line-height: 1.35;
+        line-height: 1.35; 
       }
       .one-btn { 
-        height: 60px; /* ↑ más alto */
-        font-size: 16px; /* ↑ más legible */
+        height: 60px; 
+        font-size: 16px; 
       }
       .footer { 
         padding: 1rem 0.5rem; 
@@ -640,8 +639,9 @@
         <button id="toggleBtn" class="one-btn">▷ PLAY SYSTEM</button>
 
         <div class="volume">
-          <label>VOL</label>
+          <div class="volume-icon mute" id="muteBtn">volume_mute</div>
           <input type="range" class="slider" id="volSlider" min="0" max="1" step="0.01" value="1.0">
+          <div class="volume-icon" id="maxVolBtn">volume_up</div>
         </div>
       </div>
     </div>
@@ -651,11 +651,11 @@
     <p>© 2025 CASTLE • <span class="pulse">ON AIR</span></p>
   </footer>
 
-  <script id='sonic_js' data-port='8008' src='    https://sonic.sistemahost.es/cp/widgets.js?r=477'></script>
+  <script id='sonic_js' data-port='8008' src='https://sonic.sistemahost.es/cp/widgets.js?r=477'></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const STREAM_URL = '    https://sonic.sistemahost.es/8008/stream    ';
+      const STREAM_URL = 'https://sonic.sistemahost.es/8008/stream';
       let audio = null;
       let audioContext = null;
       let analyser = null;
@@ -665,15 +665,18 @@
       let randomGlitchInterval = null;
       let lastGlitchTime = 0;
 
-      const lasers = Array.from(document.querySelectorAll('.laser'));
-      let lastLaserTrigger = 0;
-      const MIN_LASER_INTERVAL = 60; // Evita activaciones múltiples en golpes muy cercanos
-
       const toggleBtn = document.getElementById('toggleBtn');
       const volSlider = document.getElementById('volSlider');
+      const muteBtn = document.getElementById('muteBtn');
+      const maxVolBtn = document.getElementById('maxVolBtn');
       const visualizer = document.getElementById('visualizer');
       const sonicArt = document.getElementById('sonic_art');
       const sonicTitle = document.getElementById('sonic_title');
+
+      // 🔦 LÁSERES
+      const lasers = Array.from(document.querySelectorAll('.laser'));
+      let lastLaserTrigger = 0;
+      const MIN_LASER_INTERVAL = 60; // ms
 
       const barCount = 32;
       const bars = [];
@@ -685,22 +688,61 @@
         bars.push(bar);
       }
 
-      async function initAudio() {
+      function stopAudio() {
+        if (audio) {
+          audio.pause();
+          audio = null;
+        }
+        if (analyser) {
+          analyser.disconnect();
+          analyser = null;
+        }
+        if (audioContext) {
+          audioContext.close();
+          audioContext = null;
+        }
+        isPlaying = false;
+      }
+
+      function initAudioContext() {
         if (!audioContext) {
           audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
-        audio = new Audio(STREAM_URL);
-        audio.crossOrigin = 'anonymous';
-        audio.volume = parseFloat(volSlider.value);
+      }
 
-        const source = audioContext.createMediaElementSource(audio);
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        const bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
+      async function startPlayback() {
+        try {
+          if (!audioContext) {
+            initAudioContext();
+          }
+          if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+          }
 
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
+          audio = new Audio(STREAM_URL);
+          audio.crossOrigin = 'anonymous';
+          audio.volume = parseFloat(volSlider.value);
+
+          const source = audioContext.createMediaElementSource(audio);
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          const bufferLength = analyser.frequencyBinCount;
+          dataArray = new Uint8Array(bufferLength);
+
+          source.connect(analyser);
+          analyser.connect(audioContext.destination);
+
+          await audio.play();
+          isPlaying = true;
+          toggleBtn.classList.add('playing');
+          toggleBtn.textContent = '▮ STOP SYSTEM';
+          animateFFT();
+          startPeriodicGlitch();
+          startRandomGlitch();
+        } catch (e) {
+          console.error('Error al iniciar reproducción:', e);
+          stopAudio();
+        }
       }
 
       function triggerRandomLasersOnBeat(intensity) {
@@ -708,12 +750,11 @@
         if (now - lastLaserTrigger < MIN_LASER_INTERVAL) return;
         lastLaserTrigger = now;
 
-        // Elegir 1 a 3 láseres al azar
-        const count = Math.floor(Math.random() * 3) + 1; // 1, 2 o 3
+        const count = Math.floor(Math.random() * 3) + 1;
         const shuffled = [...lasers].sort(() => 0.5 - Math.random());
         const selectedLasers = shuffled.slice(0, count);
 
-        const duration = 50 + intensity * 50; // 50ms a 100ms
+        const duration = 50 + intensity * 50;
         const maxOpacity = Math.min(1, 0.5 + intensity * 0.7);
 
         selectedLasers.forEach(laser => {
@@ -738,7 +779,7 @@
         if (!isPlaying || !analyser) return;
         analyser.getByteFrequencyData(dataArray);
 
-        // Energía en graves (bins 0-5 = ~20-150Hz, rango típico de bombo)
+        // 💥 Detectar graves para láseres
         let bassEnergy = 0;
         for (let i = 0; i < 6; i++) {
           bassEnergy += dataArray[i];
@@ -746,12 +787,11 @@
         const bassAvg = bassEnergy / 6;
         const normalizedBass = bassAvg / 255;
 
-        // Umbral ajustado para detectar golpes claros
         if (normalizedBass > 0.42) {
           triggerRandomLasersOnBeat(normalizedBass);
         }
 
-        // Actualizar visualizador
+        // 📊 Visualizador FFT
         const step = Math.floor(dataArray.length / barCount);
         for (let i = 0; i < barCount; i++) {
           let sum = 0;
@@ -810,34 +850,34 @@
       }
 
       toggleBtn.onclick = async () => {
-        if (!audioContext) await initAudio();
-
         if (isPlaying) {
-          audio.pause();
-          isPlaying = false;
+          stopAudio();
           toggleBtn.classList.remove('playing');
           toggleBtn.textContent = '▷ PLAY SYSTEM';
           bars.forEach(bar => bar.style.height = '2px');
           stopAllGlitches();
         } else {
-          try {
-            if (audioContext.state === 'suspended') await audioContext.resume();
-            await audio.play();
-            isPlaying = true;
-            toggleBtn.classList.add('playing');
-            toggleBtn.textContent = '▮ STOP SYSTEM';
-            animateFFT();
-            startPeriodicGlitch();
-            startRandomGlitch();
-          } catch (e) {
-            console.error('Reproducción fallida:', e);
-          }
+          await startPlayback();
         }
       };
 
       volSlider.oninput = () => {
-        if (audio) audio.volume = parseFloat(volSlider.value);
-      }
+        const vol = parseFloat(volSlider.value);
+        if (audio) audio.volume = vol;
+        muteBtn.classList.toggle('mute', vol === 0);
+      };
+
+      muteBtn.onclick = () => {
+        volSlider.value = 0;
+        if (audio) audio.volume = 0;
+        muteBtn.classList.add('mute');
+      };
+
+      maxVolBtn.onclick = () => {
+        volSlider.value = 1.0;
+        if (audio) audio.volume = 1.0;
+        muteBtn.classList.remove('mute');
+      };
 
       function syncGlitch() {
         const text = sonicTitle.textContent.trim() || '— AWAITING SIGNAL —';
@@ -871,4 +911,3 @@
   </script>
 </body>
 </html>
-
