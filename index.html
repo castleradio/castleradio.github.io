@@ -890,6 +890,7 @@
       let displayedArtUrl = null;
       let displayedTitle = null;
       let artUpdateInterval = null;
+      let previousDataArray = null;
 
       function showAlert(message) {
         alert(`${message}\n\nPróximamente disponible en Castlebul Radio.`);
@@ -907,15 +908,18 @@
         }
       }
 
+      // ✅✅✅ CONFIGURACIÓN MEJORADA PARA ECUALIZADOR
       async function setupAudioContext() {
         if (!audioContext) {
           try {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            analyser.smoothingTimeConstant = 0.8;
+            // ✅ AUMENTADO: 512 en lugar de 256 para más resolución de frecuencias
+            analyser.fftSize = 512;
+            analyser.smoothingTimeConstant = 0.7;
             const bufferLength = analyser.frequencyBinCount;
             dataArray = new Uint8Array(bufferLength);
+            previousDataArray = new Uint8Array(bufferLength);
             
             const source = audioContext.createMediaElementSource(audio);
             source.connect(analyser);
@@ -931,30 +935,68 @@
         }
       }
 
+      // ✅✅✅ FUNCIÓN RENDERIZADO MEJORADA - TODAS LAS BARRAS SE MUEVEN
       function renderVisualizer() {
         if (!analyser || !dataArray) return;
         
         analyser.getByteFrequencyData(dataArray);
         const bars = document.querySelectorAll('.eq-bar');
+        const barCount = bars.length;
+        const bufferLength = dataArray.length;
         
-        const bassBins = dataArray.slice(0, 3);
+        // ✅ Calcular promedio general para normalizar
+        let totalSum = 0;
+        for(let i = 0; i < bufferLength; i++) {
+          totalSum += dataArray[i];
+        }
+        const average = totalSum / bufferLength;
+        
+        // ✅ Detectar golpes de bass
+        const bassBins = dataArray.slice(0, 5);
         const bassAvg = bassBins.reduce((a, b) => a + b, 0) / bassBins.length;
-        const isBassHit = bassAvg > 150;
+        const isBassHit = bassAvg > 160;
 
+        // ✅✅✅ DISTRIBUCIÓN MEJORADA DE FRECUENCIAS A BARRAS
         bars.forEach((bar, i) => {
-          const binIndex = Math.floor(i * (dataArray.length / bars.length));
+          // ✅ Usar distribución logarítmica para mejor representación de frecuencias
+          const percent = i / barCount;
+          // ✅ Índice no lineal para cubrir mejor todo el espectro
+          const binIndex = Math.floor(Math.pow(percent, 0.7) * (bufferLength * 0.8));
+          
+          // ✅ Obtener valor de la frecuencia actual
           let value = dataArray[binIndex] || 0;
-          const percent = Math.min(1, (value / 255) * 1.1);
-          const height = Math.max(8, percent * 100);
+          
+          // ✅ Si el valor es muy bajo, usar valores vecinos para evitar barras quietas
+          if (value < 10) {
+            const neighbors = [
+              dataArray[Math.max(0, binIndex - 1)] || 0,
+              dataArray[Math.min(bufferLength - 1, binIndex + 1)] || 0,
+              dataArray[Math.max(0, binIndex - 2)] || 0,
+              dataArray[Math.min(bufferLength - 1, binIndex + 2)] || 0
+            ];
+            const neighborAvg = neighbors.reduce((a, b) => a + b, 0) / neighbors.length;
+            value = Math.max(value, neighborAvg * 0.5);
+          }
+          
+          // ✅ Añadir valor base mínimo para que siempre haya movimiento
+          value = Math.max(value, average * 0.3);
+          
+          // ✅ Normalizar y amplificar para mejor visibilidad
+          const percent_normalized = Math.min(1, (value / 255) * 1.3);
+          const height = Math.max(15, percent_normalized * 100);
           
           bar.style.height = `${height}%`;
           
-          if (isBassHit && i < 5) {
+          // ✅ Efecto bass-hit en barras bajas
+          if (isBassHit && i < 6) {
             bar.classList.add('bass-hit');
           } else {
             bar.classList.remove('bass-hit');
           }
         });
+
+        // ✅ Guardar datos actuales para próxima iteración
+        previousDataArray.set(dataArray);
 
         animationId = requestAnimationFrame(renderVisualizer);
       }
