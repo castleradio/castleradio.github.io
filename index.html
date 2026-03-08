@@ -128,7 +128,7 @@
       overflow: hidden;
     }
 
-    /* ✅ TÍTULO EN UNA SOLA LÍNEA CON MARQUEE IDA Y VUELTA */
+    /* ✅ TÍTULO EN UNA SOLA LÍNEA CON MARQUEE PING-PONG INFINITO */
     #sonic_title {
       font-size: 1.1rem;
       color: var(--neon-blue);
@@ -149,15 +149,15 @@
       position: relative;
     }
 
-    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE IDA Y VUELTA */
+    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE PING-PONG INFINITO */
     .title-marquee {
       display: inline-block;
       white-space: nowrap;
       padding-left: 100%;
-      animation: marquee-pingpong 20s ease-in-out infinite;
+      animation: marquee-pingpong 18s ease-in-out infinite !important;
     }
 
-    /* ✅ ANIMACIÓN DE IDA Y VUELTA - DERECHA A IZQUIERDA Y REGRESO */
+    /* ✅ ANIMACIÓN PING-PONG INFINITA - IDA Y VUELTA SIN PARAR */
     @keyframes marquee-pingpong {
       0% {
         transform: translateX(0);
@@ -931,7 +931,7 @@
         }
       }
 
-      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE IDA Y VUELTA AL TÍTULO
+      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE PING-PONG INFINITO AL TÍTULO
       function updateTitleMarquee() {
         const titleText = sonicTitle.textContent.trim();
         const containerWidth = sonicTitle.offsetWidth - 20;
@@ -953,7 +953,7 @@
         document.body.removeChild(tempSpan);
         
         if (textWidth > containerWidth) {
-          // ✅ Texto duplicado para efecto continuo ida y vuelta
+          // ✅ Texto duplicado para efecto ping-pong continuo
           sonicTitle.innerHTML = `<span class="title-marquee">${titleText} &nbsp;&nbsp;&nbsp; ✦ &nbsp;&nbsp;&nbsp; ${titleText}</span>`;
           sonicTitle.classList.remove('title-static');
         } else {
@@ -1228,6 +1228,7 @@
             if (data && data.title && data.title !== displayedTitle) {
               displayedTitle = data.title;
               sonicTitle.textContent = data.title;
+              // ✅ Re-aplicar marquee cuando cambia la canción
               setTimeout(updateTitleMarquee, 100);
             }
             
