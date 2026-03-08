@@ -152,7 +152,7 @@
       position: relative;
     }
 
-    /* ✅ PLATTER CON EFECTO LÁSER ROJO TENUE */
+    /* ✅ PLATTER CON EFECTO LED RGB AL RITMO DEL BOMBO */
     .platter {
       width: 270px;
       height: 270px;
@@ -168,26 +168,7 @@
       justify-content: center;
       border: 2px solid #3a3a4a;
       flex-shrink: 0;
-      animation: laser-glow 4s ease-in-out infinite;
-    }
-
-    /* ✅ ANIMACIÓN LÁSER ROJO TENUE */
-    @keyframes laser-glow {
-      0%, 100% {
-        box-shadow: 
-          0 10px 30px rgba(0,0,0,0.7),
-          inset 0 0 20px rgba(0,0,0,0.5),
-          0 0 15px rgba(255, 71, 87, 0.1);
-        border-color: #3a3a4a;
-      }
-      50% {
-        box-shadow: 
-          0 10px 30px rgba(0,0,0,0.7),
-          inset 0 0 20px rgba(0,0,0,0.5),
-          0 0 30px rgba(255, 71, 87, 0.4),
-          0 0 60px rgba(255, 71, 87, 0.2);
-        border-color: rgba(255, 71, 87, 0.5);
-      }
+      transition: box-shadow 0.1s ease, border-color 0.1s ease;
     }
 
     .platter::before {
@@ -799,7 +780,7 @@
           </div>
 
           <div class="platter-section">
-            <div class="platter">
+            <div class="platter" id="platter">
               <div class="vinyl" id="vinyl">
                 <!-- ✅ ELEMENTO VISIBLE - Usa background-image -->
                 <div class="album-art-visible" id="album-art-visible">
@@ -879,6 +860,7 @@
       const sonicTitle = document.getElementById('sonic_title');
       const albumArtVisible = document.getElementById('album-art-visible');
       const sonicArtFull = document.getElementById('sonic_art_full');
+      const platter = document.getElementById('platter');
 
       let isPlaying = false;
       let volume = 1.0;
@@ -891,6 +873,13 @@
       let displayedTitle = null;
       let artUpdateInterval = null;
       let previousDataArray = null;
+      
+      // ✅ VARIABLES PARA LED RGB DEL BOMBO
+      let currentHue = 0;
+      let targetHue = 0;
+      let bassThreshold = 180;
+      let lastBassHit = 0;
+      let bassCooldown = 100;
 
       function showAlert(message) {
         alert(`${message}\n\nPróximamente disponible en Castlebul Radio.`);
@@ -914,7 +903,6 @@
           try {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioContext.createAnalyser();
-            // ✅ AUMENTADO: 512 en lugar de 256 para más resolución de frecuencias
             analyser.fftSize = 512;
             analyser.smoothingTimeConstant = 0.7;
             const bufferLength = analyser.frequencyBinCount;
@@ -935,6 +923,38 @@
         }
       }
 
+      // ✅ FUNCIÓN PARA CAMBIAR COLOR LED RGB AL RITMO DEL BOMBO
+      function updatePlatterLED(bassLevel) {
+        const now = Date.now();
+        
+        // ✅ Detectar golpe de bombo (solo frecuencias muy bajas: 60-100Hz)
+        if (bassLevel > bassThreshold && (now - lastBassHit) > bassCooldown) {
+          lastBassHit = now;
+          
+          // ✅ Cambiar a un nuevo color aleatorio en el espectro RGB
+          targetHue = Math.floor(Math.random() * 360);
+        }
+        
+        // ✅ Suavizar transición de color (lerp)
+        currentHue = currentHue + (targetHue - currentHue) * 0.1;
+        
+        // ✅ Calcular intensidad basada en nivel de bombo (tenue)
+        const intensity = Math.min(0.4, 0.15 + (bassLevel / 255) * 0.25);
+        const glowSize = 15 + (bassLevel / 255) * 20;
+        
+        // ✅ Aplicar color RGB al platter
+        const rgbColor = `hsla(${currentHue}, 80%, 60%, ${intensity})`;
+        const borderColor = `hsla(${currentHue}, 80%, 60%, ${intensity * 0.8})`;
+        
+        platter.style.boxShadow = `
+          0 10px 30px rgba(0,0,0,0.7),
+          inset 0 0 20px rgba(0,0,0,0.5),
+          0 0 ${glowSize}px ${rgbColor},
+          0 0 ${glowSize * 2}px ${rgbColor.replace('0.4', '0.15')}
+        `;
+        platter.style.borderColor = borderColor;
+      }
+
       // ✅✅✅ FUNCIÓN RENDERIZADO MEJORADA - TODAS LAS BARRAS SE MUEVEN
       function renderVisualizer() {
         if (!analyser || !dataArray) return;
@@ -951,22 +971,25 @@
         }
         const average = totalSum / bufferLength;
         
-        // ✅ Detectar golpes de bass
+        // ✅✅✅ DETECTAR BOMBO - Solo frecuencias muy bajas (bins 0-3 = ~60-100Hz)
+        const kickBins = dataArray.slice(0, 4);
+        const kickLevel = kickBins.reduce((a, b) => a + b, 0) / kickBins.length;
+        
+        // ✅ Detectar golpes de bass para ecualizador
         const bassBins = dataArray.slice(0, 5);
         const bassAvg = bassBins.reduce((a, b) => a + b, 0) / bassBins.length;
         const isBassHit = bassAvg > 160;
 
+        // ✅✅✅ ACTUALIZAR LED RGB DEL PLATTER CON EL BOMBO
+        updatePlatterLED(kickLevel);
+
         // ✅✅✅ DISTRIBUCIÓN MEJORADA DE FRECUENCIAS A BARRAS
         bars.forEach((bar, i) => {
-          // ✅ Usar distribución logarítmica para mejor representación de frecuencias
           const percent = i / barCount;
-          // ✅ Índice no lineal para cubrir mejor todo el espectro
           const binIndex = Math.floor(Math.pow(percent, 0.7) * (bufferLength * 0.8));
           
-          // ✅ Obtener valor de la frecuencia actual
           let value = dataArray[binIndex] || 0;
           
-          // ✅ Si el valor es muy bajo, usar valores vecinos para evitar barras quietas
           if (value < 10) {
             const neighbors = [
               dataArray[Math.max(0, binIndex - 1)] || 0,
@@ -978,16 +1001,13 @@
             value = Math.max(value, neighborAvg * 0.5);
           }
           
-          // ✅ Añadir valor base mínimo para que siempre haya movimiento
           value = Math.max(value, average * 0.3);
           
-          // ✅ Normalizar y amplificar para mejor visibilidad
           const percent_normalized = Math.min(1, (value / 255) * 1.3);
           const height = Math.max(15, percent_normalized * 100);
           
           bar.style.height = `${height}%`;
           
-          // ✅ Efecto bass-hit en barras bajas
           if (isBassHit && i < 6) {
             bar.classList.add('bass-hit');
           } else {
@@ -995,7 +1015,6 @@
           }
         });
 
-        // ✅ Guardar datos actuales para próxima iteración
         previousDataArray.set(dataArray);
 
         animationId = requestAnimationFrame(renderVisualizer);
@@ -1038,13 +1057,10 @@
         faderTrack.classList.remove('high-volume', 'medium-volume');
         
         if (vol >= 0.7) {
-          // ✅ Volumen alto - VERDE BRILLANTE
           faderTrack.classList.add('high-volume');
         } else if (vol >= 0.3) {
-          // ✅ Volumen medio - VERDE SUAVE
           faderTrack.classList.add('medium-volume');
         }
-        // ✅ Volumen bajo - GRIS (sin clase)
       }
 
       // ✅ FUNCIÓN MEJORADA PARA CONTROL DE VOLUMEN FLUIDO
@@ -1054,20 +1070,14 @@
         let relativeY = clientY - trackRect.top;
         let trackHeight = trackRect.height;
         
-        // Calcular volumen (0-1)
         let newVol = 1 - (relativeY / trackHeight);
-        
-        // Limitar entre 0 y 1 con márgenes suaves
         newVol = Math.max(0, Math.min(1, newVol));
         
-        // Aplicar volumen suavemente
         volume = newVol;
         audio.volume = volume;
         
-        // ✅ Actualizar color de la barra según volumen
         updateFaderTrackColor(volume);
         
-        // Actualizar posición del knob SIN transición durante el arrastre
         faderKnob.style.transition = 'none';
         updateFaderPosition(volume);
       }
@@ -1148,10 +1158,8 @@
         const img = sonicArtFull.querySelector('img');
         
         if (img && img.src && img.src !== '' && img.src !== displayedArtUrl) {
-          // Nueva imagen detectada
           displayedArtUrl = img.src;
           
-          // Crear nueva imagen para pre-cargar
           const preloadImg = new Image();
           preloadImg.onload = function() {
             albumArtVisible.style.backgroundImage = `url('${img.src}')`;
@@ -1161,7 +1169,6 @@
             }
           };
           preloadImg.onerror = function() {
-            // Si falla, mantener fallback
             const fallback = albumArtVisible.querySelector('.fallback');
             if (fallback) {
               fallback.style.display = 'flex';
@@ -1173,43 +1180,35 @@
 
       function setupSonicAPI() {
         if (window.SonicAPI && typeof window.SonicAPI.on === 'function') {
-          // ✅ Evento cuando cambia la canción
           window.SonicAPI.on('track', function(data) {
-            // Actualizar título
             if (data && data.title && data.title !== displayedTitle) {
               displayedTitle = data.title;
               sonicTitle.textContent = data.title;
             }
             
-            // ✅ Actualizar portada inmediatamente
             setTimeout(updateAlbumArtBackground, 300);
           });
           
-          // ✅ Evento de error
           window.SonicAPI.on('error', function() {
             sonicTitle.textContent = 'Castlebul Radio';
             displayedTitle = 'Castlebul Radio';
           });
         }
         
-        // ✅✅✅ INTERVALO PARA VERIFICAR CAMBIOS DE PORTADA CADA 3 SEGUNDOS
         artUpdateInterval = setInterval(updateAlbumArtBackground, 3000);
       }
 
       initVisualizer();
       updateFaderPosition(volume);
       audio.volume = volume;
-      updateFaderTrackColor(volume); // ✅ Inicializar color de la barra
+      updateFaderTrackColor(volume);
       setupSonicAPI();
 
-      // Actualizar portada al cargar
       window.addEventListener('load', function() {
         updateAlbumArtBackground();
-        // Primera verificación después de 1 segundo
         setTimeout(updateAlbumArtBackground, 1000);
       });
 
-      // ✅ Limpiar intervalo al cerrar página
       window.addEventListener('beforeunload', function() {
         if (artUpdateInterval) {
           clearInterval(artUpdateInterval);
