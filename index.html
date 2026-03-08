@@ -2,912 +2,1118 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>CASTLE</title>
-  <link rel="icon" href="assets/favicon.png" type="image/png">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@300;400&family=Share+Tech+Mono&family=Material+Icons+Outlined&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Castlebul Radio | Cyberpunk Turntable</title>
+  
+  <!-- SonicAPI Widget -->
+  <script id='sonic_js' data-port='8422' src='https://mars.streamerr.co/cp/widgets.js?r=479  '></script>
+  
+  <!-- ✅ FUENTE NOVENTERA - VT323 (Estilo terminal/pantalla CRT años 90) -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  
   <style>
-    :root {
-      --black: #0a0a0f;
-      --blue: #00f3ff;
-      --red: #ff0055;
-      --pink-neon: #ff00c8;
-      --green-neon: #05ffa0;
-    }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
+    :root {
+      --bg-dark: #050508;
+      --deck-base: #1a1a24;
+      --vinyl-black: #0a0a0a;
+      --vinyl-groove: #151515;
+      --label-color: #ff4757;
+      --neon-blue: #00f3ff;
+      --neon-green: #00ff9d;
+      --neon-purple: #bc13fe;
+      --text-main: #e0e0ff;
+      --glow-blue: 0 0 15px rgba(0, 243, 255, 0.6);
+      --glow-green: 0 0 15px rgba(0, 255, 157, 0.6);
+    }
+
     body {
-      background: var(--black);
-      color: #eee;
-      font-family: 'Exo 2', sans-serif;
-      min-height: 100svh;
-      display: grid;
-      grid-template-rows: 1fr auto;
+      font-family: 'VT323', monospace;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, #1a1a2e 0%, transparent 70%);
+      background-size: 100% 100%;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       overflow-x: hidden;
       overflow-y: auto;
-      position: relative;
+      -webkit-text-size-adjust: 100%;
     }
 
-    .lasers-container {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: -3;
-      overflow: hidden;
-    }
-
-    .laser {
-      position: absolute;
-      background: linear-gradient(90deg,
-        transparent,
-        var(--blue) 30%,
-        white 50%,
-        var(--pink-neon) 70%,
-        transparent
-      );
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.9), 0 0 40px rgba(255, 0, 200, 0.7);
-      transform-origin: 0 50%;
-      opacity: 0;
-      transition: opacity 0.02s ease;
-    }
-
-    /* LÁSERES MÁS FINOS + 3 NUEVOS (total: 9) */
-    .laser-1 { top: 8%; left: 0; width: 200%; height: 1.4px; transform: rotate(15deg); }
-    .laser-2 { top: 28%; right: 0; width: 200%; height: 1.2px; transform: rotate(-22deg); }
-    .laser-3 { bottom: 22%; left: 0; width: 220%; height: 1.6px; transform: rotate(6deg); }
-    .laser-4 { top: 62%; right: 0; width: 210%; height: 1.1px; transform: rotate(-14deg); }
-    .laser-5 { top: 43%; left: 50%; width: 250%; height: 1.3px; transform: rotate(45deg) translateX(-50%); }
-    .laser-6 { bottom: 38%; right: 30%; width: 230%; height: 1.5px; transform: rotate(-42deg); }
-    .laser-7 { top: 15%; left: 10%; width: 180%; height: 1.0px; transform: rotate(68deg); }
-    .laser-8 { bottom: 12%; right: 20%; width: 240%; height: 1.2px; transform: rotate(-60deg); }
-    .laser-9 { top: 75%; left: 5%; width: 200%; height: 1.4px; transform: rotate(33deg); }
-
-    .scanlines {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,0.15),
-        rgba(0,0,0,0.15) 1px,
-        transparent 1px,
-        transparent 2px
-      );
-      pointer-events: none;
-      z-index: -2;
-    }
-
-    .noise-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      opacity: 0.04;
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .header {
+    /* ===== HEADER ===== */
+    header {
+      width: 100%;
+      padding: 15px 10px;
       text-align: center;
-      padding: 1.5rem 1.2rem;
-      max-width: 100%;
-      margin: 0 auto;
+      background: rgba(26, 26, 36, 0.8);
+      border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+      margin-bottom: 15px;
       flex-shrink: 0;
     }
 
-    .glitch {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 6rem;
-      font-weight: 700;
-      color: white;
-      position: relative;
-      text-shadow: 0 0 10px var(--blue), 0 0 20px var(--blue);
-      letter-spacing: 6px;
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 400;
+      letter-spacing: 8px;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
     }
 
-    .glitch::before,
-    .glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .glitch::before {
-      color: var(--blue);
-      z-index: -2;
-      animation: glitch-anim-1 3s infinite alternate-reverse;
-    }
-
-    .glitch::after {
-      color: var(--red);
-      z-index: -1;
-      animation: glitch-anim-2 2.8s infinite alternate-reverse;
-    }
-
-    @keyframes glitch-anim-1 {
-      0% { clip-path: inset(80% 0 0 0); transform: translate(-3px, 0); }
-      20% { clip-path: inset(60% 0 20% 0); transform: translate(3px, 0); }
-      40% { clip-path: inset(40% 0 40% 0); transform: translate(-3px, 0); }
-      60% { clip-path: inset(20% 0 60% 0); transform: translate(3px, 0); }
-      80% { clip-path: inset(0 0 80% 0); transform: translate(-3px, 0); }
-      100% { clip-path: inset(0); transform: translate(0); }
-    }
-
-    @keyframes glitch-anim-2 {
-      0% { clip-path: inset(0 80% 0 0); transform: translate(0, -3px); }
-      20% { clip-path: inset(0 60% 0 20%); transform: translate(0, 3px); }
-      40% { clip-path: inset(0 40% 0 40%); transform: translate(0, -3px); }
-      60% { clip-path: inset(0 20% 0 60%); transform: translate(0, 3px); }
-      80% { clip-path: inset(0 0 0 80%); transform: translate(0, -3px); }
-      100% { clip-path: inset(0); transform: translate(0); }
-    }
-
-    .castle-player {
-      width: 100%;
-      max-width: 440px;
-      margin: 1.5rem auto;
-      padding: 0 1rem;
-    }
-
-    .cyberdeck {
-      width: 100%;
-      background: rgba(4, 4, 12, 0.7);
-      border: 1px solid var(--blue);
-      border-radius: 4px;
-      padding: 18px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.5), inset 0 0 12px rgba(0, 10, 20, 0.6);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 14px;
-    }
-
-    .hud {
+    /* ===== MAIN CONTENT - CENTRADO VERTICAL ===== */
+    .main-content {
       display: flex;
-      justify-content: flex-end;
-      margin-bottom: 14px;
-      border-bottom: 1px solid rgba(0, 200, 255, 0.2);
-      padding-bottom: 6px;
-    }
-
-    .status {
-      display: flex;
-      gap: 8px;
+      flex-direction: column;
       align-items: center;
-    }
-
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green-neon);
-      box-shadow: 0 0 6px var(--green-neon);
-      animation: blink-green 1.8s infinite;
-    }
-    @keyframes blink-green { 0%, 90% { opacity: 1; } 95%, 100% { opacity: 0.2; } }
-
-    .song-info {
-      min-height: 72px;
-      max-height: 96px;
-      height: auto;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin: 14px 0;
-      padding: 8px 10px;
-      background: rgba(0, 5, 15, 0.4);
-      border-radius: 4px;
-      overflow: hidden;
+      justify-content: center;
+      flex: 1;
       width: 100%;
-      position: relative;
     }
 
-    #sonic_art {
-      width: 56px;
-      height: 56px;
-      border-radius: 4px;
-      background: rgba(0, 10, 20, 0.7);
+    /* ===== TURNTABLE CONTAINER ===== */
+    .turntable-wrapper {
+      width: 540px;
+      aspect-ratio: 4/3;
+      background: var(--deck-base);
+      border-radius: 12px;
+      padding: 24px 24px 35px 24px;
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.8),
+        inset 0 0 0 2px rgba(255,255,255,0.05),
+        0 0 40px rgba(0, 243, 255, 0.15);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      margin: 15px 0;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      transform-origin: top center;
+    }
+
+    .turntable-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
-      box-shadow: 0 0 6px rgba(0, 200, 255, 0.5);
-      flex-shrink: 0;
-      animation: pulse-border 2.5s infinite alternate;
-    }
-
-    #sonic_art::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0%,
-        transparent 1px,
-        rgba(0, 30, 50, 0.5) 1px,
-        rgba(0, 30, 50, 0.5) 2px
-      );
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    #sonic_art::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='distort'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='1'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='8' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23distort)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.8;
-      pointer-events: none;
-      z-index: 1;
-      animation: horizontal-jitter 4s infinite;
-    }
-
-    @keyframes pulse-border {
-      0%, 100% { box-shadow: 0 0 8px rgba(0, 200, 255, 0.6); }
-      50% { box-shadow: 0 0 20px rgba(0, 243, 255, 1.0), 0 0 36px rgba(0, 255, 255, 0.6); }
-    }
-
-    @keyframes horizontal-jitter {
-      0%, 100% { transform: translateX(0); }
-      8%  { transform: translateX(-3px) rotate(0.8deg); }
-      16% { transform: translateX(3px) rotate(-0.6deg); }
-      24% { transform: translateX(-2px) rotate(1.2deg); }
-      32% { transform: translateX(2.5px) rotate(-1deg); }
-      40% { transform: translateX(-1.5px); }
-    }
-
-    #sonic_art img {
-      width: 100%;
       height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: contrast(1.3) brightness(1.15);
+      width: 100%;
+      gap: 15px;
     }
 
-    #sonic_art.is-loading img {
-      filter: grayscale(1) contrast(0.6);
-      opacity: 0.2;
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      height: 100%;
+      width: auto;
+    }
+
+    .song-title-container {
+      width: 320px;
+      max-width: 95%;
+      text-align: center;
     }
 
     #sonic_title {
-      flex: 1;
-      min-width: 0;
-      font-size: 15px;
-      font-family: 'Share Tech Mono', monospace;
-      color: var(--blue);
-      line-height: 1.35;
-      position: relative;
+      font-size: 1.1rem;
+      color: var(--neon-blue);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 400;
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 6px;
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      word-wrap: break-word;
+      line-height: 1.4;
+      min-height: 2.8em;
+      overflow: visible;
       white-space: normal;
-      overflow-wrap: break-word;
-      word-break: break-word;
-      overflow: hidden;
+    }
+
+    .platter-section {
+      position: relative;
+    }
+
+    .platter {
+      width: 270px;
+      height: 270px;
+      background: linear-gradient(145deg, #2a2a35, #1f1f2a);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 
+        0 10px 30px rgba(0,0,0,0.7),
+        inset 0 0 20px rgba(0,0,0,0.5);
       display: flex;
-      justify-content: center;
       align-items: center;
-      text-align: center;
+      justify-content: center;
+      border: 2px solid #3a3a4a;
+      flex-shrink: 0;
     }
 
-    .cyber-glitch {
-      position: relative;
-      display: inline-block;
-      max-width: 100%;
-    }
-
-    .cyber-glitch::before,
-    .cyber-glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      text-align: center;
-    }
-
-    .cyber-glitch::before {
-      color: var(--pink-neon);
-      clip-path: inset(2px 0 11px 0);
-      animation: glitch-shift-1 2.0s infinite;
-      z-index: -1;
-    }
-
-    .cyber-glitch::after {
-      color: var(--green-neon);
-      clip-path: inset(10px 0 3px 0);
-      animation: glitch-shift-2 2.7s infinite;
-      z-index: -2;
-    }
-
-    .cyber-glitch.flash {
-      animation: glitch-flash 1s 1;
-    }
-
-    .cyber-glitch.pulse {
-      animation: glitch-pulse 1s 1;
-    }
-
-    .cyber-glitch.chaos {
-      animation: glitch-chaos 1s 1;
-    }
-
-    @keyframes glitch-shift-1 {
-      0%, 100% { clip-path: inset(2px 0 11px 0); transform: translate(0, 0) rotate(0); }
-      6%  { clip-path: inset(0px 0 15px 0); transform: translate(-5px, 3px) rotate(1.5deg); }
-      12% { clip-path: inset(6px 0 6px 0); transform: translate(5px, -3px) rotate(-1.2deg) scaleX(1.03); }
-      18% { clip-path: inset(1px 0 13px 0); transform: translate(-4px, 4px) rotate(2deg); }
-      24% { clip-path: inset(4px 0 9px 0); transform: translate(4px, -2px) skewX(2deg); }
-      30% { clip-path: inset(3px 0 10px 0); transform: translate(-3px, 1px) scaleX(0.97); }
-    }
-
-    @keyframes glitch-shift-2 {
-      0%, 100% { clip-path: inset(10px 0 3px 0); transform: translate(0, 0) rotate(0); }
-      10% { clip-path: inset(6px 0 7px 0); transform: translate(5px, -4px) rotate(-2deg) scaleY(1.05); }
-      20% { clip-path: inset(14px 0 -1px 0); transform: translate(-5px, 3px) rotate(1.8deg); }
-      30% { clip-path: inset(4px 0 9px 0); transform: translate(-3px, -4px) skewY(3deg); }
-      40% { clip-path: inset(12px 0 1px 0); transform: translate(4px, 2px) scaleX(1.04); }
-      50% { clip-path: inset(8px 0 5px 0); transform: translate(0, -2px); }
-    }
-
-    @keyframes glitch-flash {
-      0%   { text-shadow: 0 0 8px var(--blue); opacity: 1; }
-      15%  { text-shadow: 0 0 24px rgba(0, 255, 255, 1.0), 0 0 38px rgba(0, 247, 255, 1.0); }
-      30%  { text-shadow: 0 0 28px rgba(255, 0, 200, 0.9), 0 0 42px rgba(5, 255, 160, 0.8); }
-      45%  { text-shadow: 0 0 0 transparent; opacity: 0.2; }
-      60%  { text-shadow: 0 0 30px rgba(0, 255, 255, 1.0), 0 0 46px rgba(255, 0, 200, 0.8); opacity: 1; }
-      100% { text-shadow: none; opacity: 1; }
-    }
-
-    @keyframes glitch-pulse {
-      0%   { text-shadow: 0 0 10px var(--blue); }
-      25%  { text-shadow: 0 0 26px rgba(0, 255, 255, 1.0), 0 0 40px rgba(0, 247, 255, 0.95); }
-      50%  { text-shadow: 0 0 0 transparent; opacity: 0.1; }
-      75%  { text-shadow: 0 0 32px rgba(5, 255, 160, 0.9), 0 0 50px rgba(255, 0, 200, 0.7); }
-      100% { text-shadow: none; opacity: 1; }
-    }
-
-    @keyframes glitch-chaos {
-      0%   { text-shadow: 0 0 10px var(--blue); transform: translate(0,0) rotate(0); }
-      10%  { text-shadow: 0 0 28px rgba(0, 255, 255, 1.0); transform: translate(-4px, 2px) rotate(2deg); }
-      20%  { text-shadow: 0 0 0 transparent; opacity: 0.05; transform: translate(0,0); }
-      30%  { text-shadow: 0 0 34px rgba(255, 0, 200, 0.9); transform: translate(5px, -3px) skewX(4deg); }
-      40%  { text-shadow: 0 0 0 transparent; opacity: 0.1; }
-      50%  { text-shadow: 0 0 40px rgba(5, 255, 160, 0.95); transform: translate(-3px, 4px) scaleX(1.05); }
-      60%  { text-shadow: 0 0 0 transparent; opacity: 0.05; }
-      70%  { text-shadow: 0 0 36px rgba(0, 247, 255, 1.0); transform: translate(2px, -2px) rotate(-3deg); }
-      80%  { text-shadow: 0 0 0 transparent; opacity: 0.2; }
-      90%  { text-shadow: 0 0 30px rgba(0, 255, 255, 0.9); }
-      100% { text-shadow: none; transform: translate(0,0) rotate(0); opacity: 1; }
-    }
-
-    .fft-visualizer {
-      height: 46px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin: 0 auto 12px;
-      padding: 0 6px;
-      background: 
-        linear-gradient(rgba(0,60,100,0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,60,100,0.08) 1px, transparent 1px),
-        rgba(0, 5, 15, 0.4);
-      background-size: 10px 10px;
-      border-radius: 3px;
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-    }
-
-    .fft-bar {
-      width: 4px;
-      border-radius: 2px 2px 0 0;
-      position: relative;
-      transform-origin: bottom;
-      transition: height 0.015s cubic-bezier(0.1, 0.9, 0.2, 1);
-      box-shadow: 0 0 5px rgba(0, 200, 255, 0.7);
-    }
-
-    .fft-bar::before {
+    .platter::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(to top,
-        #002266,
-        #0055aa 40%,
-        var(--blue) 70%,
-        #bbffff
-      );
-      border-radius: 2px 2px 0 0;
+      width: 95%;
+      height: 95%;
+      border-radius: 50%;
+      background: 
+        radial-gradient(circle, transparent 70%, #111 71%, #111 72%, transparent 73%),
+        repeating-conic-gradient(#1a1a1a 0 2deg, transparent 2deg 10deg);
+      opacity: 0.5;
     }
 
-    .fft-bar.overload::before {
-      background: linear-gradient(to top,
-        var(--pink-neon),
-        #ff004d 30%,
-        var(--green-neon) 60%,
-        #00ddff
-      );
-      box-shadow: 
-        0 0 14px rgba(0, 255, 255, 1.0), 
-        0 0 24px rgba(5, 255, 160, 0.8),
-        0 0 40px rgba(255, 0, 200, 0.7);
-    }
-
-    .one-btn {
-      width: 100%;
-      height: 56px;
-      background: rgba(1, 3, 12, 0.8);
-      border: 2px solid var(--blue);
-      color: white;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 15px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      position: relative;
+    .vinyl {
+      width: 94%;
+      height: 94%;
+      background: 
+        radial-gradient(circle, 
+          var(--vinyl-black) 0%, 
+          var(--vinyl-black) 40%, 
+          var(--vinyl-groove) 40%, 
+          var(--vinyl-groove) 41%, 
+          var(--vinyl-black) 41%, 
+          var(--vinyl-black) 50%, 
+          var(--vinyl-groove) 50%, 
+          var(--vinyl-groove) 51%, 
+          var(--vinyl-black) 51%, 
+          var(--vinyl-black) 60%, 
+          var(--vinyl-groove) 60%, 
+          var(--vinyl-groove) 61%, 
+          var(--vinyl-black) 61%, 
+          var(--vinyl-black) 70%, 
+          var(--vinyl-groove) 70%, 
+          var(--vinyl-groove) 71%, 
+          var(--vinyl-black) 71%, 
+          var(--vinyl-black) 80%, 
+          var(--vinyl-groove) 80%, 
+          var(--vinyl-groove) 81%, 
+          var(--vinyl-black) 81%, 
+          var(--vinyl-black) 90%, 
+          var(--vinyl-groove) 90%, 
+          var(--vinyl-groove) 91%, 
+          var(--vinyl-black) 91%, 
+          var(--vinyl-black) 100%);
+      border-radius: 50%;
+      position: absolute;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
-      margin: 10px 0;
     }
 
-    .one-btn:hover {
-      background: rgba(2, 8, 20, 0.9);
+    .vinyl.spinning {
+      animation: spin 1.8s linear infinite;
     }
 
-    .one-btn:active {
-      background: rgba(0, 20, 60, 0.8);
-      box-shadow: 0 0 20px var(--blue), inset 0 0 14px rgba(0, 200, 255, 0.6);
-      transform: scale(0.96);
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    .one-btn.playing {
-      background: rgba(2, 12, 8, 0.8);
-      border-color: var(--green-neon);
-      box-shadow: 0 0 18px rgba(5, 255, 160, 0.8);
+    /* ✅ SONIC_ART_FULL - OCULTO (como Nexus Zone) */
+    #sonic_art_full {
+      display: none !important;
     }
 
-    .volume {
+    /* ✅ ALBUM ART VISIBLE - Centrado perfecto + tamaño ligeramente mayor */
+    .album-art-visible {
+      position: absolute;
+      width: 41%;
+      height: 41%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: var(--label-color);
+      box-shadow: 
+        0 0 0 4px rgba(0,0,0,0.4),
+        0 0 0 8px rgba(10,10,10,0.8),
+        inset 0 0 10px rgba(0,0,0,0.3);
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .album-art-visible .fallback {
+      width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .volume-icon {
-      font-family: 'Material Icons Outlined';
-      font-size: 24px;
-      color: var(--blue);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .volume-icon.mute {
-      color: var(--red);
-    }
-
-    .volume-icon:hover {
-      text-shadow: 0 0 8px currentColor;
-    }
-
-    .slider {
-      flex: 1; height: 5px; -webkit-appearance: none;
-      background: rgba(0, 40, 80, 0.6);
-      border-radius: 3px;
-    }
-
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 20px; height: 20px;
-      border-radius: 50%; background: var(--blue);
-      border: 2px solid #000;
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 1.0);
-    }
-
-    .footer {
+      justify-content: center;
+      background: radial-gradient(circle at 30% 30%, #ff6b7a, var(--label-color));
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #fff;
       text-align: center;
-      padding: 1rem;
-      font-size: 0.85rem;
-      color: #555;
-      border-top: 1px solid rgba(0, 243, 255, 0.08);
-      background: rgba(6, 6, 14, 0.4);
-      flex-shrink: 0;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      line-height: 1.4;
+      letter-spacing: 2px;
+    }
+
+    .visualizer-section {
+      width: 270px;
+      max-width: 90%;
+      padding: 6px 12px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .visualizer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 3px;
+      height: 26px;
+    }
+
+    .eq-bar {
+      flex: 1;
+      width: 5px;
+      background: linear-gradient(to top, var(--neon-blue), var(--neon-green));
+      border-radius: 2px 2px 0 0;
+      height: 10%;
+      transition: height 0.05s ease;
+      box-shadow: 0 0 10px var(--neon-blue);
+      opacity: 0.9;
+    }
+
+    .eq-bar.bass-hit {
+      background: linear-gradient(to top, var(--neon-green), var(--neon-blue));
+      box-shadow: 0 0 15px var(--neon-green);
+    }
+
+    /* ✅ TONEARM - POSICIÓN AJUSTADA */
+    .tonearm-assembly {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      margin-left: 110px;
+      z-index: 20;
+      transform: scale(0.9);
+      transform-origin: top left;
+    }
+
+    .tonearm-base {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(145deg, #3a3a4a, #2a2a35);
+      border-radius: 50%;
       z-index: 10;
+      box-shadow: 
+        0 8px 20px rgba(0,0,0,0.6),
+        inset 0 2px 5px rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #4a4a5a;
+    }
+
+    .tonearm-pivot {
+      width: 19px;
+      height: 19px;
+      background: radial-gradient(circle at 30% 30%, #4a4a5a, #1a1a25);
+      border-radius: 50%;
+      border: 2px solid #666;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    /* ✅ BRAZO ACORTADO */
+    .tonearm {
+      position: absolute;
+      top: 35px;
+      right: 24px;
+      width: 135px;
+      height: 9px;
+      background: linear-gradient(90deg, #666, #aaa);
+      transform-origin: right center;
+      transform: rotate(280deg);
+      transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 9;
+      border-radius: 5px;
+      box-shadow: 
+        0 4px 10px rgba(0,0,0,0.5),
+        inset 0 1px 2px rgba(255,255,255,0.2);
+    }
+
+    .tonearm.playing {
+      transform: rotate(310deg);
+    }
+
+    .tonearm-head {
+      position: absolute;
+      left: -9px;
+      top: -6px;
+      width: 21px;
+      height: 21px;
+      background: #1a1a25;
+      border-radius: 7px;
+      transform: rotate(45deg);
+      border: 2px solid #555;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+    }
+
+    .tonearm-head::after {
+      content: '';
+      position: absolute;
+      bottom: -9px;
+      left: 7px;
+      width: 6px;
+      height: 11px;
+      background: #333;
+      border-radius: 2px;
+    }
+
+    .right-column {
       position: relative;
+      width: 85px;
+      height: 100%;
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px 0;
     }
 
-    .pulse {
-      color: var(--blue);
-      animation: heartbeat 1.4s infinite;
+    .fader-container {
+      position: relative;
+      width: 40px;
+      height: 190px;
+      background: linear-gradient(180deg, #1a1a25, #0f0f16);
+      border-radius: 20px;
+      border: 2px solid #333;
+      display: flex;
+      justify-content: center;
+      padding: 15px 0;
+      box-shadow: 
+        inset 0 0 20px rgba(0,0,0,0.9),
+        0 5px 15px rgba(0,0,0,0.5);
+      z-index: 30;
+      align-self: flex-end;
+      touch-action: none;
     }
 
-    @keyframes heartbeat {
-      0% { opacity: 0.4; }
-      50% { opacity: 1; }
-      100% { opacity: 0.4; }
+    .fader-track {
+      position: relative;
+      width: 7px;
+      height: 100%;
+      background: #222;
+      border-radius: 3px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
     }
 
-    @media (max-width: 768px) {
-      .glitch { 
-        font-size: 5rem;
-        letter-spacing: 4px; 
+    .fader-knob {
+      position: absolute;
+      left: 50%;
+      bottom: 100%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 16px;
+      background: linear-gradient(180deg, #e0e0e0, #999);
+      border-radius: 6px;
+      cursor: grab;
+      box-shadow: 
+        0 4px 12px rgba(0,0,0,0.6),
+        inset 0 1px 2px rgba(255,255,255,0.5);
+      border: 1px solid #777;
+      transition: bottom 0.08s ease-out;
+      touch-action: none;
+    }
+
+    .fader-knob:active {
+      cursor: grabbing;
+    }
+
+    .fader-knob::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 3px;
+      height: 9px;
+      background: #333;
+      border-radius: 2px;
+    }
+
+    .fader-label {
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.9rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      white-space: nowrap;
+    }
+
+    .start-stop-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      align-self: flex-end;
+    }
+
+    /* ✅ BOTÓN PLAY - PARPADEO CUANDO PAUSADO */
+    .start-stop-btn {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(145deg, #2a2a35, #1f1f2a);
+      border-radius: 50%;
+      border: 2px solid #444;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 8px 20px rgba(0,0,0,0.6),
+        inset 0 2px 5px rgba(255,255,255,0.1);
+      transition: all 0.2s;
+    }
+
+    /* ✅ PARPADEO VERDE CUANDO PAUSADO */
+    .start-stop-btn:not(.playing) {
+      animation: blink-green 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink-green {
+      0%, 100% {
+        background: linear-gradient(145deg, #2a2a35, #1f1f2a);
+        border-color: #444;
+        box-shadow: 
+          0 8px 20px rgba(0,0,0,0.6),
+          inset 0 2px 5px rgba(255,255,255,0.1);
       }
-      .castle-player { 
-        padding: 0 1rem; 
-        margin: 0.8rem auto; 
-        max-width: 94vw;
-      }
-      .cyberdeck { 
-        padding: 20px;
-        font-size: 14.5px;
-      }
-      .header { 
-        padding: 1.4rem 0.8rem; 
-      }
-      .song-info { 
-        min-height: 72px; 
-        max-height: 96px; 
-        padding: 8px 12px; 
-      }
-      #sonic_art { 
-        width: 56px; 
-        height: 56px; 
-      }
-      #sonic_title { 
-        font-size: 15px; 
+      50% {
+        background: linear-gradient(145deg, var(--neon-green), #00cc7d);
+        border-color: var(--neon-green);
+        box-shadow: 
+          var(--glow-green),
+          0 8px 25px rgba(0, 255, 157, 0.4),
+          inset 0 2px 5px rgba(255,255,255,0.3);
       }
     }
 
-    @media (max-width: 480px) {
-      .glitch { 
-        font-size: 4.4rem;
-        letter-spacing: 3px; 
+    .start-stop-btn:active {
+      transform: scale(0.95);
+      box-shadow: 
+        0 4px 10px rgba(0,0,0,0.6),
+        inset 0 2px 5px rgba(255,255,255,0.1);
+    }
+
+    /* ✅ VERDE SÓLIDO CUANDO REPRODUCIENDO */
+    .start-stop-btn.playing {
+      background: linear-gradient(145deg, var(--neon-green), #00cc7d);
+      border-color: var(--neon-green);
+      box-shadow: 
+        var(--glow-green),
+        0 8px 25px rgba(0, 255, 157, 0.4),
+        inset 0 2px 5px rgba(255,255,255,0.3);
+      animation: none;
+    }
+
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-left: 14px solid #888;
+      margin-left: 3px;
+      transition: all 0.2s;
+    }
+
+    .start-stop-btn.playing .play-icon {
+      border-left: none;
+      border-top: none;
+      border-bottom: none;
+      width: 13px;
+      height: 13px;
+      background: #111;
+      margin-left: 0;
+      box-shadow: 4px 0 0 #111, -4px 0 0 #111;
+    }
+
+    .start-stop-label {
+      font-size: 0.9rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    footer {
+      width: 100%;
+      padding: 15px 10px;
+      background: rgba(26, 26, 36, 0.8);
+      border-top: 1px solid rgba(0, 243, 255, 0.3);
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .footer-btn {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      overflow: hidden;
+    }
+
+    .footer-btn::before {
+      content: '';
+      position: absolute;
+      width: 70%;
+      height: 70%;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer-btn::after {
+      content: '';
+      position: absolute;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .footer-btn.chat {
+      background: radial-gradient(circle at 30% 30%, #4a9eff, #0066cc);
+      box-shadow: 0 0 15px rgba(0, 102, 204, 0.5);
+    }
+
+    .footer-btn.playlist {
+      background: radial-gradient(circle at 30% 30%, #4aff9e, #00cc66);
+      box-shadow: 0 0 15px rgba(0, 204, 102, 0.5);
+    }
+
+    .footer-btn.donate {
+      background: radial-gradient(circle at 30% 30%, #808080, #404040);
+      box-shadow: 0 0 15px rgba(128, 128, 128, 0.5);
+    }
+
+    .footer-btn .center-hole {
+      position: absolute;
+      width: 15%;
+      height: 15%;
+      background: var(--bg-dark);
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.3);
+      z-index: 2;
+    }
+
+    .footer-btn .btn-label {
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.9rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--text-main);
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
+      text-shadow: 0 0 10px currentColor;
+    }
+
+    .footer-btn:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .footer-btn.chat:hover {
+      box-shadow: 0 0 25px rgba(0, 102, 204, 0.8), var(--glow-blue);
+      border-color: var(--neon-blue);
+    }
+
+    .footer-btn.chat:hover .btn-label {
+      opacity: 1;
+      color: var(--neon-blue);
+      bottom: -20px;
+    }
+
+    .footer-btn.playlist:hover {
+      box-shadow: 0 0 25px rgba(0, 204, 102, 0.8), var(--glow-green);
+      border-color: var(--neon-green);
+    }
+
+    .footer-btn.playlist:hover .btn-label {
+      opacity: 1;
+      color: var(--neon-green);
+      bottom: -20px;
+    }
+
+    .footer-btn.donate:hover {
+      box-shadow: 0 0 25px rgba(128, 128, 128, 0.8);
+      border-color: #808080;
+    }
+
+    .footer-btn.donate:hover .btn-label {
+      opacity: 1;
+      color: #a0a0a0;
+      bottom: -20px;
+    }
+
+    /* ✅ RESPONSIVE - ESCALADO PROPORCIONAL SIN CAMBIAR DISTRIBUCIÓN */
+    /* Tablet */
+    @media (max-width: 650px) {
+      .turntable-wrapper {
+        transform: scale(0.85);
+        margin: 10px 0;
       }
-      .cyberdeck { 
-        padding: 18px; 
-        font-size: 14px;
-      }
-      .song-info { 
-        min-height: 68px; 
-        max-height: 92px; 
-        gap: 12px; 
-        padding: 8px 10px; 
-      }
-      #sonic_art { 
-        width: 52px; 
-        height: 52px; 
-      }
-      #sonic_title { 
-        font-size: 14px; 
-        line-height: 1.35; 
-      }
-      .one-btn { 
-        height: 60px; 
-        font-size: 16px; 
-      }
-      .footer { 
-        padding: 1rem 0.5rem; 
-        font-size: 0.85rem; 
+      
+      .logo {
+        font-size: 2.2rem;
+        letter-spacing: 6px;
       }
     }
 
-    @media (max-width: 1024px) {
-      html { overflow-x: hidden; }
+    /* Móvil grande */
+    @media (max-width: 500px) {
+      .turntable-wrapper {
+        transform: scale(0.75);
+        margin: 5px 0;
+      }
+      
+      .logo {
+        font-size: 2rem;
+        letter-spacing: 5px;
+      }
+    }
+
+    /* Móvil mediano */
+    @media (max-width: 420px) {
+      .turntable-wrapper {
+        transform: scale(0.68);
+        margin: 0 0 5px 0;
+      }
+      
+      .logo {
+        font-size: 1.8rem;
+        letter-spacing: 4px;
+      }
+    }
+
+    /* Móvil pequeño */
+    @media (max-width: 360px) {
+      .turntable-wrapper {
+        transform: scale(0.62);
+        margin: 0 0 5px 0;
+      }
+      
+      .logo {
+        font-size: 1.6rem;
+        letter-spacing: 3px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="lasers-container">
-    <div class="laser laser-1"></div>
-    <div class="laser laser-2"></div>
-    <div class="laser laser-3"></div>
-    <div class="laser laser-4"></div>
-    <div class="laser laser-5"></div>
-    <div class="laser laser-6"></div>
-    <div class="laser laser-7"></div>
-    <div class="laser laser-8"></div>
-    <div class="laser laser-9"></div>
-  </div>
+  <header>
+    <div class="logo">CASTLEBUL</div>
+  </header>
 
-  <div class="scanlines"></div>
-  <div class="noise-overlay"></div>
+  <div class="main-content">
+    <div class="turntable-wrapper">
+      <div class="turntable-body">
+        <div class="left-column">
+          <div class="song-title-container">
+            <div id="sonic_title">Castlebul Radio</div>
+          </div>
 
-  <header class="header">
-    <div class="glitch" data-text="CASTLE">CASTLE</div>
+          <div class="platter-section">
+            <div class="platter">
+              <div class="vinyl" id="vinyl">
+                <!-- ✅ ELEMENTO VISIBLE - Usa background-image -->
+                <div class="album-art-visible" id="album-art-visible">
+                  <div class="fallback">
+                    Castlebul<br>Radio
+                  </div>
+                </div>
+                <!-- ✅ SONIC_ART_FULL - OCULTO (solo para datos) -->
+                <div id="sonic_art_full" style="display:none !important;"></div>
+              </div>
+            </div>
+          </div>
 
-    <div class="castle-player">
-      <div class="cyberdeck">
-        <div class="hud">
-          <div class="status">
-            <div class="dot"></div>
-            <div style="color:var(--blue); font-size:12px; font-family:'Share Tech Mono'">CASTLE RADIO</div>
+          <div class="visualizer-section">
+            <div class="visualizer" id="visualizer"></div>
           </div>
         </div>
 
-        <div class="song-info">
-          <div id="sonic_art">
-            <div style="width:100%;height:100%;background:rgba(0,20,40,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;color:#00ccff;">NO ART</div>
+        <div class="tonearm-assembly">
+          <div class="tonearm-base">
+            <div class="tonearm-pivot"></div>
           </div>
-          <div id="sonic_title" class="cyber-glitch" data-text="— AWAITING SIGNAL —">— AWAITING SIGNAL —</div>
+          <div class="tonearm" id="tonearm">
+            <div class="tonearm-head"></div>
+          </div>
         </div>
 
-        <div class="fft-visualizer" id="visualizer"></div>
+        <div class="right-column">
+          <div class="fader-container" id="fader-container">
+            <div class="fader-track">
+              <div class="fader-knob" id="fader-knob"></div>
+            </div>
+            <div class="fader-label">Volume</div>
+          </div>
 
-        <button id="toggleBtn" class="one-btn">▷ PLAY SYSTEM</button>
-
-        <div class="volume">
-          <div class="volume-icon mute" id="muteBtn">volume_mute</div>
-          <input type="range" class="slider" id="volSlider" min="0" max="1" step="0.01" value="1.0">
-          <div class="volume-icon" id="maxVolBtn">volume_up</div>
+          <div class="start-stop-container">
+            <div class="start-stop-btn" id="play-btn">
+              <div class="play-icon"></div>
+            </div>
+            <div class="start-stop-label" id="start-stop-label">Start</div>
+          </div>
         </div>
       </div>
     </div>
-  </header>
+  </div>
 
-  <footer class="footer">
-    <p>© 2025 CASTLE • <span class="pulse">ON AIR</span></p>
+  <footer>
+    <button class="footer-btn chat" onclick="showAlert('Chat en vivo')">
+      <div class="center-hole"></div>
+      <span class="btn-label">Chat</span>
+    </button>
+    <button class="footer-btn playlist" onclick="showAlert('Playlist actual')">
+      <div class="center-hole"></div>
+      <span class="btn-label">Playlist</span>
+    </button>
+    <button class="footer-btn donate" onclick="showAlert('Sistema de donaciones')">
+      <div class="center-hole"></div>
+      <span class="btn-label">Donar</span>
+    </button>
   </footer>
 
-  <script id='sonic_js' data-port='8422' src='https://mars.streamerr.co/cp/widgets.js?r=304'></script>
+  <audio id="audio-player" crossorigin="anonymous">
+    <source src="https://mars.streamerr.co/8422/stream  " type="audio/mpeg">
+  </audio>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const STREAM_URL = 'https://mars.streamerr.co/8422/stream';
-      let audio = null;
+    (function() {
+      const audio = document.getElementById('audio-player');
+      const playBtn = document.getElementById('play-btn');
+      const startStopLabel = document.getElementById('start-stop-label');
+      const vinyl = document.getElementById('vinyl');
+      const tonearm = document.getElementById('tonearm');
+      const faderKnob = document.getElementById('fader-knob');
+      const faderContainer = document.getElementById('fader-container');
+      const faderTrack = faderContainer.querySelector('.fader-track');
+      const visualizer = document.getElementById('visualizer');
+      const sonicTitle = document.getElementById('sonic_title');
+      const albumArtVisible = document.getElementById('album-art-visible');
+      const sonicArtFull = document.getElementById('sonic_art_full');
+
+      let isPlaying = false;
+      let volume = 1.0;
       let audioContext = null;
       let analyser = null;
       let dataArray = null;
-      let isPlaying = false;
-      let periodicGlitchInterval = null;
-      let randomGlitchInterval = null;
-      let lastGlitchTime = 0;
+      let animationId = null;
+      let isDragging = false;
+      let displayedArtUrl = null;
+      let displayedTitle = null;
+      let artUpdateInterval = null;
 
-      const toggleBtn = document.getElementById('toggleBtn');
-      const volSlider = document.getElementById('volSlider');
-      const muteBtn = document.getElementById('muteBtn');
-      const maxVolBtn = document.getElementById('maxVolBtn');
-      const visualizer = document.getElementById('visualizer');
-      const sonicArt = document.getElementById('sonic_art');
-      const sonicTitle = document.getElementById('sonic_title');
-
-      // 🔦 LÁSERES
-      const lasers = Array.from(document.querySelectorAll('.laser'));
-      let lastLaserTrigger = 0;
-      const MIN_LASER_INTERVAL = 60; // ms
-
-      const barCount = 32;
-      const bars = [];
-      for (let i = 0; i < barCount; i++) {
-        const bar = document.createElement('div');
-        bar.className = 'fft-bar';
-        bar.style.height = '2px';
-        visualizer.appendChild(bar);
-        bars.push(bar);
+      function showAlert(message) {
+        alert(`${message}\n\nPróximamente disponible en Castlebul Radio.`);
       }
 
-      function stopAudio() {
-        if (audio) {
-          audio.pause();
-          audio = null;
+      window.showAlert = showAlert;
+
+      function initVisualizer() {
+        visualizer.innerHTML = '';
+        const barCount = 20;
+        for(let i = 0; i < barCount; i++) {
+          const bar = document.createElement('div');
+          bar.className = 'eq-bar';
+          visualizer.appendChild(bar);
         }
-        if (analyser) {
-          analyser.disconnect();
-          analyser = null;
-        }
-        if (audioContext) {
-          audioContext.close();
-          audioContext = null;
-        }
-        isPlaying = false;
       }
 
-      function initAudioContext() {
+      async function setupAudioContext() {
         if (!audioContext) {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.8;
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            
+            renderVisualizer();
+          } catch (e) {
+            console.warn("Web Audio API error:", e);
+          }
+        }
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
         }
       }
 
-      async function startPlayback() {
-        try {
-          if (!audioContext) {
-            initAudioContext();
-          }
-          if (audioContext.state === 'suspended') {
-            await audioContext.resume();
-          }
-
-          audio = new Audio(STREAM_URL);
-          audio.crossOrigin = 'anonymous';
-          audio.volume = parseFloat(volSlider.value);
-
-          const source = audioContext.createMediaElementSource(audio);
-          analyser = audioContext.createAnalyser();
-          analyser.fftSize = 256;
-          const bufferLength = analyser.frequencyBinCount;
-          dataArray = new Uint8Array(bufferLength);
-
-          source.connect(analyser);
-          analyser.connect(audioContext.destination);
-
-          await audio.play();
-          isPlaying = true;
-          toggleBtn.classList.add('playing');
-          toggleBtn.textContent = '▮ STOP SYSTEM';
-          animateFFT();
-          startPeriodicGlitch();
-          startRandomGlitch();
-        } catch (e) {
-          console.error('Error al iniciar reproducción:', e);
-          stopAudio();
-        }
-      }
-
-      function triggerRandomLasersOnBeat(intensity) {
-        const now = Date.now();
-        if (now - lastLaserTrigger < MIN_LASER_INTERVAL) return;
-        lastLaserTrigger = now;
-
-        const count = Math.floor(Math.random() * 3) + 1;
-        const shuffled = [...lasers].sort(() => 0.5 - Math.random());
-        const selectedLasers = shuffled.slice(0, count);
-
-        const duration = 50 + intensity * 50;
-        const maxOpacity = Math.min(1, 0.5 + intensity * 0.7);
-
-        selectedLasers.forEach(laser => {
-          laser.style.opacity = maxOpacity.toString();
-          const spread = intensity * (0.8 + Math.random() * 0.4);
-          const blueGlow = 0.7 + intensity * 0.3;
-          const pinkGlow = 0.5 + intensity * 0.2;
-          laser.style.boxShadow = `
-            0 0 ${15 + spread * 50}px rgba(0, 243, 255, ${blueGlow}),
-            0 0 ${30 + spread * 80}px rgba(255, 0, 200, ${pinkGlow}),
-            0 0 ${60 + spread * 100}px rgba(5, 255, 160, ${0.3 + intensity * 0.2})
-          `;
-
-          setTimeout(() => {
-            laser.style.opacity = '0';
-            laser.style.boxShadow = '0 0 20px rgba(0, 243, 255, 0.9), 0 0 40px rgba(255, 0, 200, 0.7)';
-          }, duration);
-        });
-      }
-
-      function animateFFT() {
-        if (!isPlaying || !analyser) return;
+      function renderVisualizer() {
+        if (!analyser || !dataArray) return;
+        
         analyser.getByteFrequencyData(dataArray);
+        const bars = document.querySelectorAll('.eq-bar');
+        
+        const bassBins = dataArray.slice(0, 3);
+        const bassAvg = bassBins.reduce((a, b) => a + b, 0) / bassBins.length;
+        const isBassHit = bassAvg > 150;
 
-        // 💥 Detectar graves para láseres
-        let bassEnergy = 0;
-        for (let i = 0; i < 6; i++) {
-          bassEnergy += dataArray[i];
-        }
-        const bassAvg = bassEnergy / 6;
-        const normalizedBass = bassAvg / 255;
-
-        if (normalizedBass > 0.42) {
-          triggerRandomLasersOnBeat(normalizedBass);
-        }
-
-        // 📊 Visualizador FFT
-        const step = Math.floor(dataArray.length / barCount);
-        for (let i = 0; i < barCount; i++) {
-          let sum = 0;
-          for (let j = i * step; j < (i + 1) * step && j < dataArray.length; j++) {
-            sum += dataArray[j];
+        bars.forEach((bar, i) => {
+          const binIndex = Math.floor(i * (dataArray.length / bars.length));
+          let value = dataArray[binIndex] || 0;
+          const percent = Math.min(1, (value / 255) * 1.1);
+          const height = Math.max(8, percent * 100);
+          
+          bar.style.height = `${height}%`;
+          
+          if (isBassHit && i < 5) {
+            bar.classList.add('bass-hit');
+          } else {
+            bar.classList.remove('bass-hit');
           }
-          const avg = sum / step;
-          const height = Math.max(2, (avg / 255) * 44);
-          bars[i].classList.toggle('overload', height > 38);
-          bars[i].style.height = `${height}px`;
-        }
+        });
 
-        requestAnimationFrame(animateFFT);
+        animationId = requestAnimationFrame(renderVisualizer);
       }
 
-      function triggerGlitch(type = 'pulse') {
-        const now = Date.now();
-        if ((now - lastGlitchTime) < 3000) return;
-        lastGlitchTime = now;
-
-        const text = sonicTitle.textContent.trim() || '— AWAITING SIGNAL —';
-        sonicTitle.setAttribute('data-text', text);
-
-        const r = Math.random();
-        let effect = 'pulse';
-        if (r < 0.3) effect = 'flash';
-        else if (r < 0.4) effect = 'chaos';
-
-        sonicTitle.classList.add(effect);
-        setTimeout(() => sonicTitle.classList.remove(effect), 1000);
-      }
-
-      function startPeriodicGlitch() {
-        if (periodicGlitchInterval) clearInterval(periodicGlitchInterval);
-        periodicGlitchInterval = setInterval(() => {
-          if (isPlaying) triggerGlitch('pulse');
-        }, 15000);
-      }
-
-      function startRandomGlitch() {
-        if (randomGlitchInterval) clearInterval(randomGlitchInterval);
-        const next = 5000 + Math.random() * 7000;
-        randomGlitchInterval = setTimeout(() => {
-          if (isPlaying) {
-            triggerGlitch();
-            startRandomGlitch();
-          }
-        }, next);
-      }
-
-      function stopAllGlitches() {
-        if (periodicGlitchInterval) clearInterval(periodicGlitchInterval);
-        if (randomGlitchInterval) clearTimeout(randomGlitchInterval);
-        periodicGlitchInterval = null;
-        randomGlitchInterval = null;
-      }
-
-      toggleBtn.onclick = async () => {
+      // ✅ FUNCIÓN TOGGLE PLAY MEJORADA - CAMBIA TEXTO Y ESTADO
+      async function togglePlay() {
         if (isPlaying) {
-          stopAudio();
-          toggleBtn.classList.remove('playing');
-          toggleBtn.textContent = '▷ PLAY SYSTEM';
-          bars.forEach(bar => bar.style.height = '2px');
-          stopAllGlitches();
+          audio.pause();
+          vinyl.classList.remove('spinning');
+          tonearm.classList.remove('playing');
+          playBtn.classList.remove('playing');
+          startStopLabel.textContent = 'Start';
+          isPlaying = false;
         } else {
-          await startPlayback();
+          await setupAudioContext();
+          
+          try {
+            await audio.play();
+            vinyl.classList.add('spinning');
+            tonearm.classList.add('playing');
+            playBtn.classList.add('playing');
+            startStopLabel.textContent = 'Stop';
+            isPlaying = true;
+          } catch (e) {
+            console.error("Playback failed:", e);
+          }
         }
-      };
-
-      volSlider.oninput = () => {
-        const vol = parseFloat(volSlider.value);
-        if (audio) audio.volume = vol;
-        muteBtn.classList.toggle('mute', vol === 0);
-      };
-
-      muteBtn.onclick = () => {
-        volSlider.value = 0;
-        if (audio) audio.volume = 0;
-        muteBtn.classList.add('mute');
-      };
-
-      maxVolBtn.onclick = () => {
-        volSlider.value = 1.0;
-        if (audio) audio.volume = 1.0;
-        muteBtn.classList.remove('mute');
-      };
-
-      function syncGlitch() {
-        const text = sonicTitle.textContent.trim() || '— AWAITING SIGNAL —';
-        sonicTitle.setAttribute('data-text', text);
       }
-      syncGlitch();
-      let attempts = 0;
-      const initInterval = setInterval(() => {
-        syncGlitch();
-        attempts++;
-        if (attempts > 20) clearInterval(initInterval);
-      }, 70);
 
-      const titleObserver = new MutationObserver(() => {
-        const currentText = sonicTitle.textContent.trim();
-        const oldText = sonicTitle.getAttribute('data-text') || '';
-        if (currentText && currentText !== oldText) {
-          sonicTitle.setAttribute('data-text', currentText);
-          sonicTitle.classList.add('flash');
-          setTimeout(() => sonicTitle.classList.remove('flash'), 1000);
-          lastGlitchTime = Date.now();
+      function updateFaderPosition(vol) {
+        const minPos = 5;
+        const maxPos = 95;
+        const pos = minPos + (vol * (maxPos - minPos));
+        faderKnob.style.bottom = `${pos}%`;
+      }
+
+      // ✅ FUNCIÓN MEJORADA PARA CONTROL DE VOLUMEN FLUIDO
+      function setVolumeFromPosition(clientY) {
+        const trackRect = faderTrack.getBoundingClientRect();
+        
+        let relativeY = clientY - trackRect.top;
+        let trackHeight = trackRect.height;
+        
+        // Calcular volumen (0-1)
+        let newVol = 1 - (relativeY / trackHeight);
+        
+        // Limitar entre 0 y 1 con márgenes suaves
+        newVol = Math.max(0, Math.min(1, newVol));
+        
+        // Aplicar volumen suavemente
+        volume = newVol;
+        audio.volume = volume;
+        
+        // Actualizar posición del knob SIN transición durante el arrastre
+        faderKnob.style.transition = 'none';
+        updateFaderPosition(volume);
+      }
+
+      // ✅ EVENTOS MOUSE MEJORADOS
+      function handleMouseDown(e) {
+        isDragging = true;
+        faderKnob.style.transition = 'none';
+        e.preventDefault();
+        setVolumeFromPosition(e.clientY);
+      }
+
+      function handleMouseMove(e) {
+        if (isDragging) {
+          e.preventDefault();
+          setVolumeFromPosition(e.clientY);
+        }
+      }
+
+      function handleMouseUp() {
+        if (isDragging) {
+          isDragging = false;
+          faderKnob.style.transition = 'bottom 0.08s ease-out';
+        }
+      }
+
+      // ✅ EVENTOS TOUCH MEJORADOS
+      function handleTouchStart(e) {
+        isDragging = true;
+        faderKnob.style.transition = 'none';
+        e.preventDefault();
+        setVolumeFromPosition(e.touches[0].clientY);
+      }
+
+      function handleTouchMove(e) {
+        if (isDragging) {
+          e.preventDefault();
+          setVolumeFromPosition(e.touches[0].clientY);
+        }
+      }
+
+      function handleTouchEnd() {
+        if (isDragging) {
+          isDragging = false;
+          faderKnob.style.transition = 'bottom 0.08s ease-out';
+        }
+      }
+
+      // ✅ LISTENERS OPTIMIZADOS
+      faderKnob.addEventListener('mousedown', handleMouseDown);
+      faderTrack.addEventListener('mousedown', handleMouseDown);
+      faderContainer.addEventListener('mousedown', handleMouseDown);
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+
+      faderKnob.addEventListener('touchstart', handleTouchStart, { passive: false });
+      faderTrack.addEventListener('touchstart', handleTouchStart, { passive: false });
+      faderContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
+
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
+      document.addEventListener('touchcancel', handleTouchEnd);
+
+      playBtn.addEventListener('click', togglePlay);
+
+      document.querySelectorAll('.footer-btn').forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          const actions = ['Chat en vivo', 'Playlist actual', 'Sistema de donaciones'];
+          alert(`${actions[index]}\n\nPróximamente disponible en Castlebul Radio.`);
+        });
+      });
+
+      // ✅✅✅ FUNCIÓN MEJORADA PARA ACTUALIZAR PORTADA AUTOMÁTICAMENTE
+      function updateAlbumArtBackground() {
+        if (!sonicArtFull || !albumArtVisible) return;
+        
+        const img = sonicArtFull.querySelector('img');
+        
+        if (img && img.src && img.src !== '' && img.src !== displayedArtUrl) {
+          // Nueva imagen detectada
+          displayedArtUrl = img.src;
+          
+          // Crear nueva imagen para pre-cargar
+          const preloadImg = new Image();
+          preloadImg.onload = function() {
+            albumArtVisible.style.backgroundImage = `url('${img.src}')`;
+            const fallback = albumArtVisible.querySelector('.fallback');
+            if (fallback) {
+              fallback.style.display = 'none';
+            }
+          };
+          preloadImg.onerror = function() {
+            // Si falla, mantener fallback
+            const fallback = albumArtVisible.querySelector('.fallback');
+            if (fallback) {
+              fallback.style.display = 'flex';
+            }
+          };
+          preloadImg.src = img.src;
+        }
+      }
+
+      function setupSonicAPI() {
+        if (window.SonicAPI && typeof window.SonicAPI.on === 'function') {
+          // ✅ Evento cuando cambia la canción
+          window.SonicAPI.on('track', function(data) {
+            // Actualizar título
+            if (data && data.title && data.title !== displayedTitle) {
+              displayedTitle = data.title;
+              sonicTitle.textContent = data.title;
+            }
+            
+            // ✅ Actualizar portada inmediatamente
+            setTimeout(updateAlbumArtBackground, 300);
+          });
+          
+          // ✅ Evento de error
+          window.SonicAPI.on('error', function() {
+            sonicTitle.textContent = 'Castlebul Radio';
+            displayedTitle = 'Castlebul Radio';
+          });
+        }
+        
+        // ✅✅✅ INTERVALO PARA VERIFICAR CAMBIOS DE PORTADA CADA 3 SEGUNDOS
+        artUpdateInterval = setInterval(updateAlbumArtBackground, 3000);
+      }
+
+      initVisualizer();
+      updateFaderPosition(volume);
+      audio.volume = volume;
+      setupSonicAPI();
+
+      // Actualizar portada al cargar
+      window.addEventListener('load', function() {
+        updateAlbumArtBackground();
+        // Primera verificación después de 1 segundo
+        setTimeout(updateAlbumArtBackground, 1000);
+      });
+
+      // ✅ Limpiar intervalo al cerrar página
+      window.addEventListener('beforeunload', function() {
+        if (artUpdateInterval) {
+          clearInterval(artUpdateInterval);
         }
       });
-      titleObserver.observe(sonicTitle, { childList: true, subtree: true, characterData: true });
 
-      const artObserver = new MutationObserver(() => {
-        sonicArt.classList.toggle('is-loading', !sonicArt.querySelector('img'));
-      });
-      artObserver.observe(sonicArt, { childList: true, subtree: true });
-    });
+    })();
   </script>
 </body>
 </html>
