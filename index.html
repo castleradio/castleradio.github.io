@@ -30,6 +30,7 @@
       --text-main: #e0e0ff;
       --glow-blue: 0 0 15px rgba(0, 243, 255, 0.6);
       --glow-green: 0 0 15px rgba(0, 255, 157, 0.6);
+      --glow-red: 0 0 15px rgba(255, 71, 87, 0.4);
     }
 
     body {
@@ -151,6 +152,7 @@
       position: relative;
     }
 
+    /* ✅ PLATTER CON EFECTO LÁSER ROJO TENUE */
     .platter {
       width: 270px;
       height: 270px;
@@ -159,12 +161,33 @@
       position: relative;
       box-shadow: 
         0 10px 30px rgba(0,0,0,0.7),
-        inset 0 0 20px rgba(0,0,0,0.5);
+        inset 0 0 20px rgba(0,0,0,0.5),
+        0 0 20px rgba(255, 71, 87, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
       border: 2px solid #3a3a4a;
       flex-shrink: 0;
+      animation: laser-glow 4s ease-in-out infinite;
+    }
+
+    /* ✅ ANIMACIÓN LÁSER ROJO TENUE */
+    @keyframes laser-glow {
+      0%, 100% {
+        box-shadow: 
+          0 10px 30px rgba(0,0,0,0.7),
+          inset 0 0 20px rgba(0,0,0,0.5),
+          0 0 15px rgba(255, 71, 87, 0.1);
+        border-color: #3a3a4a;
+      }
+      50% {
+        box-shadow: 
+          0 10px 30px rgba(0,0,0,0.7),
+          inset 0 0 20px rgba(0,0,0,0.5),
+          0 0 30px rgba(255, 71, 87, 0.4),
+          0 0 60px rgba(255, 71, 87, 0.2);
+        border-color: rgba(255, 71, 87, 0.5);
+      }
     }
 
     .platter::before {
