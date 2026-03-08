@@ -125,9 +125,10 @@
       width: 350px;
       max-width: 95%;
       text-align: center;
+      overflow: hidden;
     }
 
-    /* ✅ TÍTULO UTILIZA TODO EL ANCHO DEL CONTENEDOR */
+    /* ✅ TÍTULO CON MÁXIMO 2 LÍNEAS Y SCROLL */
     #sonic_title {
       font-size: 1.1rem;
       color: var(--neon-blue);
@@ -140,12 +141,43 @@
       background: rgba(0, 0, 0, 0.5);
       border-radius: 6px;
       border: 1px solid rgba(0, 243, 255, 0.3);
-      word-wrap: break-word;
       line-height: 1.4;
-      min-height: 2.8em;
-      overflow: visible;
+      max-height: 3.2em; /* ✅ Máximo 2 líneas */
+      overflow: hidden;
       white-space: normal;
       width: 100%;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE */
+    .title-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: title-scroll 8s ease-in-out infinite;
+    }
+
+    /* ✅ ANIMACIÓN DE DESPLAZAMIENTO - DERECHA A IZQUIERDA Y VICEVERSA */
+    @keyframes title-scroll {
+      0% {
+        transform: translateX(0);
+      }
+      45% {
+        transform: translateX(calc(-100% + 330px));
+      }
+      55% {
+        transform: translateX(calc(-100% + 330px));
+      }
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    /* ✅ CLASE PARA DESACTIVAR SCROLL SI EL TÍTULO CORTO */
+    .title-no-scroll {
+      animation: none !important;
+      white-space: normal !important;
     }
 
     .platter-section {
@@ -897,6 +929,38 @@
         }
       }
 
+      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE AL TÍTULO
+      function updateTitleMarquee() {
+        const titleText = sonicTitle.textContent;
+        const containerWidth = sonicTitle.offsetWidth - 20; // Restar padding
+        
+        // ✅ Crear elemento temporal para medir el texto
+        const tempSpan = document.createElement('span');
+        tempSpan.style.cssText = `
+          font-size: 1.1rem;
+          letter-spacing: 3px;
+          font-weight: 400;
+          white-space: nowrap;
+          visibility: hidden;
+          position: absolute;
+        `;
+        tempSpan.textContent = titleText;
+        document.body.appendChild(tempSpan);
+        
+        const textWidth = tempSpan.offsetWidth;
+        document.body.removeChild(tempSpan);
+        
+        // ✅ Si el texto es más ancho que el contenedor, aplicar marquee
+        if (textWidth > containerWidth) {
+          sonicTitle.innerHTML = `<span class="title-marquee">${titleText}</span>`;
+          sonicTitle.classList.remove('title-no-scroll');
+        } else {
+          // ✅ Si el texto cabe, no aplicar scroll
+          sonicTitle.textContent = titleText;
+          sonicTitle.classList.add('title-no-scroll');
+        }
+      }
+
       // ✅✅✅ CONFIGURACIÓN MEJORADA PARA ECUALIZADOR
       async function setupAudioContext() {
         if (!audioContext) {
@@ -927,22 +991,16 @@
       function updatePlatterLED(bassLevel) {
         const now = Date.now();
         
-        // ✅ Detectar golpe de bombo (solo frecuencias muy bajas: 60-100Hz)
         if (bassLevel > bassThreshold && (now - lastBassHit) > bassCooldown) {
           lastBassHit = now;
-          
-          // ✅ Cambiar a un nuevo color aleatorio en el espectro RGB
           targetHue = Math.floor(Math.random() * 360);
         }
         
-        // ✅ Suavizar transición de color (lerp)
         currentHue = currentHue + (targetHue - currentHue) * 0.1;
         
-        // ✅ Calcular intensidad basada en nivel de bombo (tenue)
         const intensity = Math.min(0.4, 0.15 + (bassLevel / 255) * 0.25);
         const glowSize = 15 + (bassLevel / 255) * 20;
         
-        // ✅ Aplicar color RGB al platter
         const rgbColor = `hsla(${currentHue}, 80%, 60%, ${intensity})`;
         const borderColor = `hsla(${currentHue}, 80%, 60%, ${intensity * 0.8})`;
         
@@ -964,26 +1022,21 @@
         const barCount = bars.length;
         const bufferLength = dataArray.length;
         
-        // ✅ Calcular promedio general para normalizar
         let totalSum = 0;
         for(let i = 0; i < bufferLength; i++) {
           totalSum += dataArray[i];
         }
         const average = totalSum / bufferLength;
         
-        // ✅✅✅ DETECTAR BOMBO - Solo frecuencias muy bajas (bins 0-3 = ~60-100Hz)
         const kickBins = dataArray.slice(0, 4);
         const kickLevel = kickBins.reduce((a, b) => a + b, 0) / kickBins.length;
         
-        // ✅ Detectar golpes de bass para ecualizador
         const bassBins = dataArray.slice(0, 5);
         const bassAvg = bassBins.reduce((a, b) => a + b, 0) / bassBins.length;
         const isBassHit = bassAvg > 160;
 
-        // ✅✅✅ ACTUALIZAR LED RGB DEL PLATTER CON EL BOMBO
         updatePlatterLED(kickLevel);
 
-        // ✅✅✅ DISTRIBUCIÓN MEJORADA DE FRECUENCIAS A BARRAS
         bars.forEach((bar, i) => {
           const percent = i / barCount;
           const binIndex = Math.floor(Math.pow(percent, 0.7) * (bufferLength * 0.8));
@@ -1052,7 +1105,6 @@
         faderKnob.style.bottom = `${pos}%`;
       }
 
-      // ✅ FUNCIÓN PARA ACTUALIZAR COLOR DE LA BARRA SEGÚN VOLUMEN
       function updateFaderTrackColor(vol) {
         faderTrack.classList.remove('high-volume', 'medium-volume');
         
@@ -1063,7 +1115,6 @@
         }
       }
 
-      // ✅ FUNCIÓN MEJORADA PARA CONTROL DE VOLUMEN FLUIDO
       function setVolumeFromPosition(clientY) {
         const trackRect = faderTrack.getBoundingClientRect();
         
@@ -1082,7 +1133,6 @@
         updateFaderPosition(volume);
       }
 
-      // ✅ EVENTOS MOUSE MEJORADOS
       function handleMouseDown(e) {
         isDragging = true;
         faderKnob.style.transition = 'none';
@@ -1104,7 +1154,6 @@
         }
       }
 
-      // ✅ EVENTOS TOUCH MEJORADOS
       function handleTouchStart(e) {
         isDragging = true;
         faderKnob.style.transition = 'none';
@@ -1126,7 +1175,6 @@
         }
       }
 
-      // ✅ LISTENERS OPTIMIZADOS
       faderKnob.addEventListener('mousedown', handleMouseDown);
       faderTrack.addEventListener('mousedown', handleMouseDown);
       faderContainer.addEventListener('mousedown', handleMouseDown);
@@ -1151,7 +1199,6 @@
         });
       });
 
-      // ✅✅✅ FUNCIÓN MEJORADA PARA ACTUALIZAR PORTADA AUTOMÁTICAMENTE
       function updateAlbumArtBackground() {
         if (!sonicArtFull || !albumArtVisible) return;
         
@@ -1184,6 +1231,8 @@
             if (data && data.title && data.title !== displayedTitle) {
               displayedTitle = data.title;
               sonicTitle.textContent = data.title;
+              // ✅ Actualizar marquee cuando cambia el título
+              setTimeout(updateTitleMarquee, 100);
             }
             
             setTimeout(updateAlbumArtBackground, 300);
@@ -1192,6 +1241,7 @@
           window.SonicAPI.on('error', function() {
             sonicTitle.textContent = 'Castlebul Radio';
             displayedTitle = 'Castlebul Radio';
+            setTimeout(updateTitleMarquee, 100);
           });
         }
         
@@ -1207,6 +1257,8 @@
       window.addEventListener('load', function() {
         updateAlbumArtBackground();
         setTimeout(updateAlbumArtBackground, 1000);
+        // ✅ Inicializar marquee al cargar
+        setTimeout(updateTitleMarquee, 500);
       });
 
       window.addEventListener('beforeunload', function() {
