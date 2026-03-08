@@ -128,7 +128,7 @@
       overflow: hidden;
     }
 
-    /* ✅ TÍTULO CON MÁXIMO 2 LÍNEAS Y SCROLL */
+    /* ✅ TÍTULO EN UNA SOLA LÍNEA CON MARQUEE INFINITO */
     #sonic_title {
       font-size: 1.1rem;
       color: var(--neon-blue);
@@ -141,43 +141,42 @@
       background: rgba(0, 0, 0, 0.5);
       border-radius: 6px;
       border: 1px solid rgba(0, 243, 255, 0.3);
-      line-height: 1.4;
-      max-height: 3.2em; /* ✅ Máximo 2 líneas */
+      line-height: 1.6;
+      max-height: 2em; /* ✅ Una sola línea */
       overflow: hidden;
-      white-space: normal;
+      white-space: nowrap;
       width: 100%;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+      position: relative;
     }
 
-    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE */
+    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE INFINITO */
     .title-marquee {
       display: inline-block;
       white-space: nowrap;
-      animation: title-scroll 8s ease-in-out infinite;
+      padding-left: 100%; /* ✅ Comienza fuera del contenedor */
+      animation: marquee-infinite 25s linear infinite;
     }
 
-    /* ✅ ANIMACIÓN DE DESPLAZAMIENTO - DERECHA A IZQUIERDA Y VICEVERSA */
-    @keyframes title-scroll {
+    /* ✅ ANIMACIÓN INFINITA DE DERECHA A IZQUIERDA - MUY SUAVE Y LENTA */
+    @keyframes marquee-infinite {
       0% {
         transform: translateX(0);
       }
-      45% {
-        transform: translateX(calc(-100% + 330px));
-      }
-      55% {
-        transform: translateX(calc(-100% + 330px));
-      }
       100% {
-        transform: translateX(0);
+        transform: translateX(-100%);
       }
     }
 
-    /* ✅ CLASE PARA DESACTIVAR SCROLL SI EL TÍTULO CORTO */
-    .title-no-scroll {
-      animation: none !important;
+    /* ✅ CLASE PARA DESACTIVAR MARQUEE SI EL TÍTULO CORTO */
+    .title-static {
       white-space: normal !important;
+    }
+
+    .title-static .title-marquee {
+      animation: none !important;
+      padding-left: 0 !important;
+      transform: none !important;
+      display: block;
     }
 
     .platter-section {
@@ -929,12 +928,12 @@
         }
       }
 
-      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE AL TÍTULO
+      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE INFINITO AL TÍTULO
       function updateTitleMarquee() {
-        const titleText = sonicTitle.textContent;
+        const titleText = sonicTitle.textContent.trim();
         const containerWidth = sonicTitle.offsetWidth - 20; // Restar padding
         
-        // ✅ Crear elemento temporal para medir el texto
+        // ✅ Crear elemento temporal para medir el ancho real del texto
         const tempSpan = document.createElement('span');
         tempSpan.style.cssText = `
           font-size: 1.1rem;
@@ -943,6 +942,7 @@
           white-space: nowrap;
           visibility: hidden;
           position: absolute;
+          font-family: 'VT323', monospace;
         `;
         tempSpan.textContent = titleText;
         document.body.appendChild(tempSpan);
@@ -950,14 +950,14 @@
         const textWidth = tempSpan.offsetWidth;
         document.body.removeChild(tempSpan);
         
-        // ✅ Si el texto es más ancho que el contenedor, aplicar marquee
+        // ✅ Si el texto es más ancho que el contenedor, aplicar marquee infinito
         if (textWidth > containerWidth) {
-          sonicTitle.innerHTML = `<span class="title-marquee">${titleText}</span>`;
-          sonicTitle.classList.remove('title-no-scroll');
+          sonicTitle.innerHTML = `<span class="title-marquee">${titleText} &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; ${titleText}</span>`;
+          sonicTitle.classList.remove('title-static');
         } else {
-          // ✅ Si el texto cabe, no aplicar scroll
+          // ✅ Si el texto cabe, mostrar estático sin scroll
           sonicTitle.textContent = titleText;
-          sonicTitle.classList.add('title-no-scroll');
+          sonicTitle.classList.add('title-static');
         }
       }
 
