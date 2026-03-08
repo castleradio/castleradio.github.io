@@ -128,7 +128,7 @@
       overflow: hidden;
     }
 
-    /* ✅ TÍTULO EN UNA SOLA LÍNEA CON MARQUEE INFINITO */
+    /* ✅ TÍTULO EN UNA SOLA LÍNEA CON MARQUEE IDA Y VUELTA */
     #sonic_title {
       font-size: 1.1rem;
       color: var(--neon-blue);
@@ -149,21 +149,24 @@
       position: relative;
     }
 
-    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE INFINITO */
+    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE IDA Y VUELTA */
     .title-marquee {
       display: inline-block;
       white-space: nowrap;
       padding-left: 100%;
-      animation: marquee-infinite 15s linear infinite;
+      animation: marquee-pingpong 20s ease-in-out infinite;
     }
 
-    /* ✅ ANIMACIÓN INFINITA DE DERECHA A IZQUIERDA - MÁS RÁPIDA Y FLUIDA */
-    @keyframes marquee-infinite {
+    /* ✅ ANIMACIÓN DE IDA Y VUELTA - DERECHA A IZQUIERDA Y REGRESO */
+    @keyframes marquee-pingpong {
       0% {
         transform: translateX(0);
       }
+      50% {
+        transform: translateX(calc(-100% + 330px));
+      }
       100% {
-        transform: translateX(-100%);
+        transform: translateX(0);
       }
     }
 
@@ -928,7 +931,7 @@
         }
       }
 
-      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE INFINITO AL TÍTULO
+      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE IDA Y VUELTA AL TÍTULO
       function updateTitleMarquee() {
         const titleText = sonicTitle.textContent.trim();
         const containerWidth = sonicTitle.offsetWidth - 20;
@@ -950,7 +953,8 @@
         document.body.removeChild(tempSpan);
         
         if (textWidth > containerWidth) {
-          sonicTitle.innerHTML = `<span class="title-marquee">${titleText} &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; ${titleText}</span>`;
+          // ✅ Texto duplicado para efecto continuo ida y vuelta
+          sonicTitle.innerHTML = `<span class="title-marquee">${titleText} &nbsp;&nbsp;&nbsp; ✦ &nbsp;&nbsp;&nbsp; ${titleText}</span>`;
           sonicTitle.classList.remove('title-static');
         } else {
           sonicTitle.textContent = titleText;
