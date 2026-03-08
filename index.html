@@ -142,7 +142,7 @@
       border-radius: 6px;
       border: 1px solid rgba(0, 243, 255, 0.3);
       line-height: 1.6;
-      max-height: 2em; /* ✅ Una sola línea */
+      max-height: 2em;
       overflow: hidden;
       white-space: nowrap;
       width: 100%;
@@ -153,11 +153,11 @@
     .title-marquee {
       display: inline-block;
       white-space: nowrap;
-      padding-left: 100%; /* ✅ Comienza fuera del contenedor */
-      animation: marquee-infinite 25s linear infinite;
+      padding-left: 100%;
+      animation: marquee-infinite 15s linear infinite;
     }
 
-    /* ✅ ANIMACIÓN INFINITA DE DERECHA A IZQUIERDA - MUY SUAVE Y LENTA */
+    /* ✅ ANIMACIÓN INFINITA DE DERECHA A IZQUIERDA - MÁS RÁPIDA Y FLUIDA */
     @keyframes marquee-infinite {
       0% {
         transform: translateX(0);
@@ -931,9 +931,8 @@
       // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE INFINITO AL TÍTULO
       function updateTitleMarquee() {
         const titleText = sonicTitle.textContent.trim();
-        const containerWidth = sonicTitle.offsetWidth - 20; // Restar padding
+        const containerWidth = sonicTitle.offsetWidth - 20;
         
-        // ✅ Crear elemento temporal para medir el ancho real del texto
         const tempSpan = document.createElement('span');
         tempSpan.style.cssText = `
           font-size: 1.1rem;
@@ -950,18 +949,15 @@
         const textWidth = tempSpan.offsetWidth;
         document.body.removeChild(tempSpan);
         
-        // ✅ Si el texto es más ancho que el contenedor, aplicar marquee infinito
         if (textWidth > containerWidth) {
           sonicTitle.innerHTML = `<span class="title-marquee">${titleText} &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; ${titleText}</span>`;
           sonicTitle.classList.remove('title-static');
         } else {
-          // ✅ Si el texto cabe, mostrar estático sin scroll
           sonicTitle.textContent = titleText;
           sonicTitle.classList.add('title-static');
         }
       }
 
-      // ✅✅✅ CONFIGURACIÓN MEJORADA PARA ECUALIZADOR
       async function setupAudioContext() {
         if (!audioContext) {
           try {
@@ -987,7 +983,6 @@
         }
       }
 
-      // ✅ FUNCIÓN PARA CAMBIAR COLOR LED RGB AL RITMO DEL BOMBO
       function updatePlatterLED(bassLevel) {
         const now = Date.now();
         
@@ -1013,7 +1008,6 @@
         platter.style.borderColor = borderColor;
       }
 
-      // ✅✅✅ FUNCIÓN RENDERIZADO MEJORADA - TODAS LAS BARRAS SE MUEVEN
       function renderVisualizer() {
         if (!analyser || !dataArray) return;
         
@@ -1073,7 +1067,6 @@
         animationId = requestAnimationFrame(renderVisualizer);
       }
 
-      // ✅ FUNCIÓN TOGGLE PLAY MEJORADA - CAMBIA TEXTO Y ESTADO
       async function togglePlay() {
         if (isPlaying) {
           audio.pause();
@@ -1231,7 +1224,6 @@
             if (data && data.title && data.title !== displayedTitle) {
               displayedTitle = data.title;
               sonicTitle.textContent = data.title;
-              // ✅ Actualizar marquee cuando cambia el título
               setTimeout(updateTitleMarquee, 100);
             }
             
@@ -1257,7 +1249,6 @@
       window.addEventListener('load', function() {
         updateAlbumArtBackground();
         setTimeout(updateAlbumArtBackground, 1000);
-        // ✅ Inicializar marquee al cargar
         setTimeout(updateTitleMarquee, 500);
       });
 
