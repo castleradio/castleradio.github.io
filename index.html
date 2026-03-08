@@ -125,10 +125,9 @@
       width: 350px;
       max-width: 95%;
       text-align: center;
-      overflow: hidden;
     }
 
-    /* ✅ TÍTULO EN UNA SOLA LÍNEA CON MARQUEE PING-PONG INFINITO */
+    /* ✅ TÍTULO CON SALTOS DE LÍNEA - SIN ANIMACIÓN */
     #sonic_title {
       font-size: 1.1rem;
       color: var(--neon-blue);
@@ -141,45 +140,12 @@
       background: rgba(0, 0, 0, 0.5);
       border-radius: 6px;
       border: 1px solid rgba(0, 243, 255, 0.3);
-      line-height: 1.6;
-      max-height: 2em;
-      overflow: hidden;
-      white-space: nowrap;
+      word-wrap: break-word;
+      line-height: 1.4;
+      min-height: 2.8em;
+      overflow: visible;
+      white-space: normal;
       width: 100%;
-      position: relative;
-    }
-
-    /* ✅ CONTENEDOR INTERNO PARA EFECTO MARQUEE PING-PONG INFINITO */
-    .title-marquee {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: marquee-pingpong 18s ease-in-out infinite !important;
-    }
-
-    /* ✅ ANIMACIÓN PING-PONG INFINITA - IDA Y VUELTA SIN PARAR */
-    @keyframes marquee-pingpong {
-      0% {
-        transform: translateX(0);
-      }
-      50% {
-        transform: translateX(calc(-100% + 330px));
-      }
-      100% {
-        transform: translateX(0);
-      }
-    }
-
-    /* ✅ CLASE PARA DESACTIVAR MARQUEE SI EL TÍTULO CORTO */
-    .title-static {
-      white-space: normal !important;
-    }
-
-    .title-static .title-marquee {
-      animation: none !important;
-      padding-left: 0 !important;
-      transform: none !important;
-      display: block;
     }
 
     .platter-section {
@@ -931,37 +897,6 @@
         }
       }
 
-      // ✅✅✅ FUNCIÓN PARA APLICAR EFECTO MARQUEE PING-PONG INFINITO AL TÍTULO
-      function updateTitleMarquee() {
-        const titleText = sonicTitle.textContent.trim();
-        const containerWidth = sonicTitle.offsetWidth - 20;
-        
-        const tempSpan = document.createElement('span');
-        tempSpan.style.cssText = `
-          font-size: 1.1rem;
-          letter-spacing: 3px;
-          font-weight: 400;
-          white-space: nowrap;
-          visibility: hidden;
-          position: absolute;
-          font-family: 'VT323', monospace;
-        `;
-        tempSpan.textContent = titleText;
-        document.body.appendChild(tempSpan);
-        
-        const textWidth = tempSpan.offsetWidth;
-        document.body.removeChild(tempSpan);
-        
-        if (textWidth > containerWidth) {
-          // ✅ Texto duplicado para efecto ping-pong continuo
-          sonicTitle.innerHTML = `<span class="title-marquee">${titleText} &nbsp;&nbsp;&nbsp; ✦ &nbsp;&nbsp;&nbsp; ${titleText}</span>`;
-          sonicTitle.classList.remove('title-static');
-        } else {
-          sonicTitle.textContent = titleText;
-          sonicTitle.classList.add('title-static');
-        }
-      }
-
       async function setupAudioContext() {
         if (!audioContext) {
           try {
@@ -1228,8 +1163,6 @@
             if (data && data.title && data.title !== displayedTitle) {
               displayedTitle = data.title;
               sonicTitle.textContent = data.title;
-              // ✅ Re-aplicar marquee cuando cambia la canción
-              setTimeout(updateTitleMarquee, 100);
             }
             
             setTimeout(updateAlbumArtBackground, 300);
@@ -1238,7 +1171,6 @@
           window.SonicAPI.on('error', function() {
             sonicTitle.textContent = 'Castlebul Radio';
             displayedTitle = 'Castlebul Radio';
-            setTimeout(updateTitleMarquee, 100);
           });
         }
         
@@ -1254,7 +1186,6 @@
       window.addEventListener('load', function() {
         updateAlbumArtBackground();
         setTimeout(updateAlbumArtBackground, 1000);
-        setTimeout(updateTitleMarquee, 500);
       });
 
       window.addEventListener('beforeunload', function() {
