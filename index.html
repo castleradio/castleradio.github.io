@@ -3,864 +3,1706 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Castlebul Radio | Cyberpunk Turntable</title>
+  <title>Castle</title>
   
   <!-- SonicAPI Widget -->
-  <script id='sonic_js' data-port='8422' src='https://mars.streamerr.co/cp/widgets.js?r=479  '></script>
+  <script id='sonic_js' data-port='8422' src='https://mars.streamerr.co/cp/widgets.js?r=479'></script>
   
-  <!-- ✅ FUENTE NOVENTERA - VT323 (Estilo terminal/pantalla CRT años 90) -->
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=VT323&family=Montserrat:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     :root {
-      --bg-dark: #050508;
-      --deck-base: #1a1a24;
-      --vinyl-black: #0a0a0a;
-      --vinyl-groove: #151515;
-      --label-color: #ff4757;
-      --neon-blue: #00f3ff;
-      --neon-green: #00ff9d;
-      --neon-purple: #bc13fe;
-      --text-main: #e0e0ff;
-      --glow-blue: 0 0 15px rgba(0, 243, 255, 0.6);
-      --glow-green: 0 0 15px rgba(0, 255, 157, 0.6);
-      --glow-red: 0 0 15px rgba(255, 71, 87, 0.4);
+      --pioneer-blue: #00a8ff;
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff007f;
+      --neon-purple: #9d00ff;
+      --neon-green: #00ff88;
+      --neon-orange: #ff9900;
+      --neon-red: #ff2a4b;
+      --metal-silver: #eef1f6;
+      --scale: 1;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: #030408;
     }
 
     body {
-      font-family: 'VT323', monospace;
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 50% 0%, #1a1a2e 0%, transparent 70%);
-      background-size: 100% 100%;
-      color: var(--text-main);
-      min-height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      color: #e5e9f0;
       display: flex;
       flex-direction: column;
+      justify-content: space-between; /* Centra el contenido verticalmente entre header y footer */
       align-items: center;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-text-size-adjust: 100%;
+      position: relative;
+      background: 
+        radial-gradient(ellipse at 50% 0%, rgba(157, 0, 255, 0.22) 0%, transparent 60%),
+        radial-gradient(circle at 15% 50%, rgba(255, 0, 127, 0.16) 0%, transparent 45%),
+        radial-gradient(circle at 85% 50%, rgba(0, 243, 255, 0.16) 0%, transparent 45%),
+        linear-gradient(180deg, #05060d 0%, #080914 45%, #020306 100%);
     }
 
-    /* ===== HEADER ===== */
-    header {
+    /* ===== SOL SYNTHWAVE RETRO OCHENTERO/NOVENTERO ===== */
+    .synth-sun-backdrop {
+      position: fixed;
+      top: 38%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(280px, 46vw, 460px);
+      height: clamp(280px, 46vw, 460px);
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ff007f 0%, #ff5500 35%, #ffaa00 70%, transparent 100%);
+      opacity: 0.45;
+      filter: blur(28px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Resplandor del horizonte cyberpunk */
+    .cyber-horizon-glow {
+      position: fixed;
+      bottom: 215px;
+      left: 0;
       width: 100%;
-      padding: 15px 10px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, var(--neon-cyan) 25%, var(--neon-pink) 50%, var(--neon-cyan) 75%, transparent 100%);
+      box-shadow: 0 0 25px var(--neon-cyan), 0 0 50px var(--neon-pink);
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Cuadrícula láser 3D en perspectiva estilo Tron / Outrun */
+    .cyber-grid-floor {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 220px;
+      background: 
+        linear-gradient(180deg, transparent 0%, rgba(4, 5, 10, 0.75) 50%, #020306 100%),
+        repeating-linear-gradient(90deg, rgba(0, 243, 255, 0.18) 0px, rgba(0, 243, 255, 0.18) 1.5px, transparent 1.5px, transparent 40px),
+        repeating-linear-gradient(0deg, rgba(255, 0, 127, 0.18) 0px, rgba(255, 0, 127, 0.18) 1.5px, transparent 1.5px, transparent 24px);
+      transform: perspective(280px) rotateX(62deg);
+      transform-origin: bottom center;
+      box-shadow: inset 0 20px 40px rgba(0, 243, 255, 0.15);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Líneas de escaneo CRT analógicas de los 80s */
+    .crt-scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0px, rgba(0, 0, 0, 0.16) 1px, transparent 1px, transparent 3px);
+      z-index: 999;
+      opacity: 0.35;
+    }
+
+    /* ===== TÍTULO "CASTLE" CON NEÓN CYBERPUNK ===== */
+    header.castle-header {
+      width: 100%;
+      padding: 26px 15px 10px;
       text-align: center;
-      background: rgba(26, 26, 36, 0.8);
-      border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
       flex-shrink: 0;
     }
 
-    .logo {
-      font-size: 2.5rem;
-      font-weight: 400;
-      letter-spacing: 8px;
-      background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+    .castle-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 8vw, 4.8rem);
+      font-weight: 900;
+      letter-spacing: 14px;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 
+        0 0 7px rgba(255, 255, 255, 0.9),
+        0 0 15px var(--neon-cyan),
+        0 0 35px var(--neon-cyan),
+        0 0 70px var(--neon-pink),
+        0 0 110px var(--neon-purple);
+      line-height: 1;
+      padding-left: 14px; /* compensa el espaciado de las letras */
+      animation: neon-title-glow 3s infinite alternate ease-in-out;
     }
 
-    /* ===== MAIN CONTENT - CENTRADO VERTICAL ===== */
-    .main-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    @keyframes neon-title-glow {
+      0% {
+        text-shadow: 
+          0 0 7px rgba(255, 255, 255, 0.9),
+          0 0 15px var(--neon-cyan),
+          0 0 35px var(--neon-cyan),
+          0 0 70px var(--neon-pink),
+          0 0 100px var(--neon-purple);
+      }
+      100% {
+        text-shadow: 
+          0 0 10px rgba(255, 255, 255, 1),
+          0 0 25px var(--neon-cyan),
+          0 0 50px var(--neon-pink),
+          0 0 95px var(--neon-pink),
+          0 0 135px var(--neon-purple);
+      }
+    }
+
+    /* ===== SECCIÓN CENTRAL QUE CENTRA VERTICALMENTE EL REPRODUCTOR ===== */
+    main.center-stage {
       flex: 1;
+      display: flex;
+      align-items: center; /* Centrado vertical exacto */
+      justify-content: center;
       width: 100%;
+      max-width: 780px;
+      padding: 10px;
+      position: relative;
+      z-index: 15;
     }
 
-    /* ===== TURNTABLE CONTAINER ===== */
-    .turntable-wrapper {
-      width: 540px;
-      aspect-ratio: 4/3;
-      background: var(--deck-base);
-      border-radius: 12px;
-      padding: 24px 24px 35px 24px;
-      box-shadow: 
-        0 20px 60px rgba(0,0,0,0.8),
-        inset 0 0 0 2px rgba(255,255,255,0.05),
-        0 0 40px rgba(0, 243, 255, 0.15);
-      border: 1px solid rgba(0, 243, 255, 0.2);
-      margin: 15px 0;
+    .player-outer-bounds {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* El viewport calcula dinámicamente la altura exacta del tocadiscos escalado */
+    .turntable-viewport {
+      width: 100%;
+      max-width: 730px;
+      height: 560px;
       position: relative;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: flex-start;
       transform-origin: top center;
     }
 
-    .turntable-body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      height: 100%;
-      width: 100%;
-      gap: 15px;
-    }
-
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      height: 100%;
-      width: auto;
-    }
-
-    /* ✅ TÍTULO Y ECUALIZADOR CON MISMOS MÁRGENES - 350px */
-    .song-title-container {
-      width: 350px;
-      max-width: 95%;
-      text-align: center;
-    }
-
-    /* ✅ TÍTULO CON SALTOS DE LÍNEA - SIN ANIMACIÓN */
-    #sonic_title {
-      font-size: 1.1rem;
-      color: var(--neon-blue);
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      font-weight: 400;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-      padding: 5px 10px;
-      background: rgba(0, 0, 0, 0.5);
+    /* ===== CHASIS PIONEER PLX-1000 ===== */
+    .turntable-wrapper {
+      width: 730px;
+      height: 560px;
+      background: linear-gradient(180deg, #1b1c23 0%, #0d0e12 40%, #050608 100%);
       border-radius: 6px;
-      border: 1px solid rgba(0, 243, 255, 0.3);
-      word-wrap: break-word;
-      line-height: 1.4;
-      min-height: 2.8em;
-      overflow: visible;
-      white-space: normal;
-      width: 100%;
-    }
-
-    .platter-section {
-      position: relative;
-    }
-
-    /* ✅ PLATTER CON EFECTO LED RGB AL RITMO DEL BOMBO */
-    .platter {
-      width: 270px;
-      height: 270px;
-      background: linear-gradient(145deg, #2a2a35, #1f1f2a);
-      border-radius: 50%;
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform-origin: top center;
+      transform: translateX(-50%) scale(var(--scale, 1));
+      border: 1px solid #282a35;
       box-shadow: 
-        0 10px 30px rgba(0,0,0,0.7),
-        inset 0 0 20px rgba(0,0,0,0.5),
-        0 0 20px rgba(255, 71, 87, 0.2);
+        0 40px 90px rgba(0, 0, 0, 0.98),
+        0 12px 30px rgba(0, 0, 0, 0.85),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.95),
+        0 0 35px rgba(0, 168, 255, 0.18),
+        0 0 70px rgba(255, 0, 127, 0.1);
+      margin: 0;
+    }
+
+    /* Fallbacks responsivos de alta fidelidad */
+    @media (max-width: 750px) { :root { --scale: 0.94; } .turntable-viewport { height: calc(560px * 0.94); } }
+    @media (max-width: 700px) { :root { --scale: 0.88; } .turntable-viewport { height: calc(560px * 0.88); } }
+    @media (max-width: 650px) { :root { --scale: 0.82; } .turntable-viewport { height: calc(560px * 0.82); } }
+    @media (max-width: 600px) { :root { --scale: 0.75; } .turntable-viewport { height: calc(560px * 0.75); } }
+    @media (max-width: 550px) { :root { --scale: 0.69; } .turntable-viewport { height: calc(560px * 0.69); } }
+    @media (max-width: 500px) { :root { --scale: 0.62; } .turntable-viewport { height: calc(560px * 0.62); } }
+    @media (max-width: 450px) { :root { --scale: 0.55; } .turntable-viewport { height: calc(560px * 0.55); } }
+    @media (max-width: 400px) { :root { --scale: 0.49; } .turntable-viewport { height: calc(560px * 0.49); } }
+    @media (max-width: 360px) { :root { --scale: 0.44; } .turntable-viewport { height: calc(560px * 0.44); } }
+    @media (max-width: 330px) { :root { --scale: 0.39; } .turntable-viewport { height: calc(560px * 0.39); } }
+
+    /* ===== ADAPTADOR 45 RPM (ALUMINIO PULIDO MACIZO 72px) ===== */
+    .rpm45-well {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #08090d 50%, #1a1b24 100%);
+      border: 2px solid #2a2c38;
+      box-shadow: inset 0 5px 12px rgba(0,0,0,0.95), 0 1px 2px rgba(255,255,255,0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid #3a3a4a;
-      flex-shrink: 0;
-      transition: box-shadow 0.1s ease, border-color 0.1s ease;
+      z-index: 10;
     }
 
-    .platter::before {
+    .rpm45-puck {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: 
+        conic-gradient(
+          from 45deg,
+          #ffffff 0deg,
+          #d8dbe2 30deg,
+          #6c707d 90deg,
+          #ffffff 135deg,
+          #d8dbe2 165deg,
+          #6c707d 225deg,
+          #ffffff 270deg,
+          #d8dbe2 300deg,
+          #6c707d 360deg
+        );
+      border: 1.5px solid #aeb4c6;
+      box-shadow: 
+        0 5px 15px rgba(0,0,0,0.9),
+        inset 0 1px 2px rgba(255,255,255,0.95),
+        inset 0 -2px 4px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .rpm45-puck::before {
       content: '';
       position: absolute;
-      width: 95%;
-      height: 95%;
+      inset: 8px;
       border-radius: 50%;
-      background: 
-        radial-gradient(circle, transparent 70%, #111 71%, #111 72%, transparent 73%),
-        repeating-conic-gradient(#1a1a1a 0 2deg, transparent 2deg 10deg);
-      opacity: 0.5;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: repeating-radial-gradient(circle, transparent 0, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px);
     }
 
-    .vinyl {
-      width: 94%;
-      height: 94%;
-      background: 
-        radial-gradient(circle, 
-          var(--vinyl-black) 0%, 
-          var(--vinyl-black) 40%, 
-          var(--vinyl-groove) 40%, 
-          var(--vinyl-groove) 41%, 
-          var(--vinyl-black) 41%, 
-          var(--vinyl-black) 50%, 
-          var(--vinyl-groove) 50%, 
-          var(--vinyl-groove) 51%, 
-          var(--vinyl-black) 51%, 
-          var(--vinyl-black) 60%, 
-          var(--vinyl-groove) 60%, 
-          var(--vinyl-groove) 61%, 
-          var(--vinyl-black) 61%, 
-          var(--vinyl-black) 70%, 
-          var(--vinyl-groove) 70%, 
-          var(--vinyl-groove) 71%, 
-          var(--vinyl-black) 71%, 
-          var(--vinyl-black) 80%, 
-          var(--vinyl-groove) 80%, 
-          var(--vinyl-groove) 81%, 
-          var(--vinyl-black) 81%, 
-          var(--vinyl-black) 90%, 
-          var(--vinyl-groove) 90%, 
-          var(--vinyl-groove) 91%, 
-          var(--vinyl-black) 91%, 
-          var(--vinyl-black) 100%);
-      border-radius: 50%;
+    .rpm45-puck::after {
+      content: '';
       position: absolute;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
-    }
-
-    .vinyl.spinning {
-      animation: spin 1.8s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    /* ✅ SONIC_ART_FULL - OCULTO (como Nexus Zone) */
-    #sonic_art_full {
-      display: none !important;
-    }
-
-    /* ✅ ALBUM ART VISIBLE - Centrado perfecto + tamaño ligeramente mayor */
-    .album-art-visible {
-      position: absolute;
-      width: 41%;
-      height: 41%;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-color: var(--label-color);
-      box-shadow: 
-        0 0 0 4px rgba(0,0,0,0.4),
-        0 0 0 8px rgba(10,10,10,0.8),
-        inset 0 0 10px rgba(0,0,0,0.3);
-      z-index: 10;
-      overflow: hidden;
+      background: radial-gradient(circle at 35% 35%, #555, #111);
+      border: 1px solid #777;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
     }
 
-    .album-art-visible .fallback {
-      width: 100%;
-      height: 100%;
+    /* ===== PANTALLA OLED / VFD CON FILTRO CRT SUAVE ===== */
+    .vfd-console {
+      position: absolute;
+      top: 10px;
+      left: 106px;
+      width: 394px;
+      height: 86px;
+      background: #020408;
+      border-radius: 4px;
+      border: 1.5px solid #142838;
+      box-shadow: 
+        inset 0 0 25px rgba(0, 168, 255, 0.15),
+        inset 0 3px 6px rgba(0,0,0,0.9);
+      padding: 6px 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 25;
+    }
+
+    .crt-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.28) 0px,
+          rgba(0, 0, 0, 0.28) 1px,
+          transparent 1px,
+          transparent 2px
+        ),
+        radial-gradient(
+          circle at center,
+          transparent 65%,
+          rgba(0, 0, 0, 0.35) 100%
+        ),
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.05) 0%,
+          transparent 50%
+        );
+      opacity: 0.85;
+    }
+
+    .vfd-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed rgba(0, 168, 255, 0.3);
+      padding-bottom: 2px;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live-radar {
+      position: relative;
+      width: 10px;
+      height: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 30% 30%, #ff6b7a, var(--label-color));
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #fff;
-      text-align: center;
-      text-transform: uppercase;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      line-height: 1.4;
-      letter-spacing: 2px;
     }
 
-    /* ✅ VISUALIZER CON MISMO ANCHO QUE TÍTULO - 350px */
-    .visualizer-section {
-      width: 350px;
-      max-width: 95%;
-      padding: 6px 12px;
-      background: rgba(0,0,0,0.5);
-      border-radius: 8px;
-      border: 1px solid rgba(0, 243, 255, 0.2);
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    .radar-core {
+      width: 6px;
+      height: 6px;
+      background: #ff2a4b;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ff2a4b, 0 0 14px #ff0055;
+      z-index: 2;
+    }
+
+    .radar-wave {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      border: 1.5px solid #ff2a4b;
+      animation: radar-ping 1.5s infinite cubic-bezier(0, 0.2, 0.8, 1);
+      z-index: 1;
+    }
+
+    @keyframes radar-ping {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(3.5); opacity: 0; }
+    }
+
+    .live-text {
+      color: #ff3b5c;
+      font-family: 'VT323', monospace;
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      line-height: 1;
+      text-transform: uppercase;
+      text-shadow: 0 0 8px rgba(255, 59, 92, 0.8);
+    }
+
+    .dj-live-widget {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    #dj_display {
+      font-family: 'VT323', monospace;
+      font-size: 1.35rem;
+      color: var(--neon-orange);
+      text-shadow: 0 0 8px rgba(255, 153, 0, 0.8), 0 0 16px rgba(255, 119, 0, 0.5);
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .vfd-title-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      display: flex;
+      align-items: center;
+      mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%);
+    }
+
+    .vfd-marquee-track {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      width: max-content;
+      animation: vfd-infinite-scroll 16s linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes vfd-infinite-scroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .marquee-text {
+      font-family: 'VT323', monospace;
+      font-size: 1.35rem;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.7);
+      line-height: 1.1;
+      flex-shrink: 0;
+    }
+
+    .marquee-divider {
+      padding: 0 40px;
+      color: var(--pioneer-blue);
+      font-size: 0.9rem;
+      text-shadow: 0 0 8px var(--pioneer-blue);
+      flex-shrink: 0;
+      display: inline-block;
     }
 
     .visualizer {
       display: flex;
       align-items: flex-end;
-      justify-content: center;
-      gap: 3px;
+      justify-content: space-between;
+      gap: 2px;
       height: 26px;
+      border-top: 1px solid rgba(0, 168, 255, 0.15);
+      padding-top: 2px;
     }
 
     .eq-bar {
       flex: 1;
-      width: 5px;
-      background: linear-gradient(to top, var(--neon-blue), var(--neon-green));
-      border-radius: 2px 2px 0 0;
+      background: linear-gradient(
+        to top,
+        #0055ff 0%,
+        var(--neon-cyan) 30%,
+        var(--neon-orange) 70%,
+        var(--neon-red) 100%
+      );
+      border-radius: 1px 1px 0 0;
       height: 10%;
-      transition: height 0.05s ease;
-      box-shadow: 0 0 10px var(--neon-blue);
-      opacity: 0.9;
+      box-shadow: 0 0 4px rgba(0, 243, 255, 0.35);
+      transition: height 0.05s ease-out;
+      opacity: 0.95;
     }
 
     .eq-bar.bass-hit {
-      background: linear-gradient(to top, var(--neon-green), var(--neon-blue));
-      box-shadow: 0 0 15px var(--neon-green);
+      filter: brightness(1.35);
+      box-shadow: 0 0 8px var(--neon-cyan);
     }
 
-    /* ✅ TONEARM - POSICIÓN AJUSTADA (MÁS ABAJO) */
-    .tonearm-assembly {
+    .pioneer-specs {
       position: absolute;
-      top: 80px;
-      left: 50%;
-      margin-left: 110px;
-      z-index: 20;
-      transform: scale(0.9);
-      transform-origin: top left;
+      top: 16px;
+      right: 24px;
+      text-align: right;
+      font-size: 0.55rem;
+      color: #72768a;
+      letter-spacing: 0.5px;
+      line-height: 1.3;
+    }
+    .pioneer-specs strong {
+      font-style: italic;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
     }
 
-    .tonearm-base {
+    /* ===== CUENCA DEL PLATO (CENTRADA 50/50) ===== */
+    .platter-bay {
       position: absolute;
-      top: 0;
-      right: 0;
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(145deg, #3a3a4a, #2a2a35);
+      top: 113px;
+      left: 88px;
+      width: 430px;
+      height: 430px;
       border-radius: 50%;
-      z-index: 10;
+      background: radial-gradient(circle, #040507 68%, #14151c 100%);
+      border: 1px solid #232530;
       box-shadow: 
-        0 8px 20px rgba(0,0,0,0.6),
-        inset 0 2px 5px rgba(255,255,255,0.1);
+        inset 0 12px 28px rgba(0,0,0,0.98),
+        inset 0 -3px 8px rgba(255,255,255,0.04),
+        0 2px 8px rgba(0,0,0,0.8);
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid #4a4a5a;
+      z-index: 5;
     }
 
-    .tonearm-pivot {
-      width: 19px;
-      height: 19px;
-      background: radial-gradient(circle at 30% 30%, #4a4a5a, #1a1a25);
+    .platter {
+      width: 416px;
+      height: 416px;
       border-radius: 50%;
-      border: 2px solid #666;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      background: 
+        radial-gradient(circle, #1a1b24 87%, #2a2c38 89%, #12131a 91%),
+        repeating-conic-gradient(#1a1b22 0deg 2deg, #2d2f3b 2deg 4deg);
+      border: 3px solid #8c90a2;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.95), inset 0 0 20px rgba(0,0,0,0.9);
+      transition: box-shadow 0.12s ease, border-color 0.12s ease;
     }
 
-    /* ✅ BRAZO ACORTADO */
+    .platter::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: 
+        repeating-radial-gradient(circle, transparent 0, transparent 4px, rgba(0,0,0,0.4) 4px, rgba(0,0,0,0.6) 6px),
+        repeating-conic-gradient(from 0deg, #c2c7d6 0deg 1.5deg, #14151e 1.5deg 3deg);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .platter-strobe-reflection {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 185deg at 50% 50%,
+        transparent 0deg,
+        rgba(0, 168, 255, 0.45) 12deg,
+        rgba(238, 241, 246, 0.5) 20deg,
+        rgba(255, 153, 0, 0.5) 30deg,
+        rgba(255, 42, 75, 0.45) 42deg,
+        transparent 55deg
+      );
+      mask: radial-gradient(circle, transparent 90%, black 91%);
+      -webkit-mask: radial-gradient(circle, transparent 90%, black 91%);
+      pointer-events: none;
+      transition: background 0.18s ease, opacity 0.12s ease;
+    }
+
+    .platter-strobe-reflection.dim-red {
+      background: conic-gradient(
+        from 185deg at 50% 50%,
+        transparent 0deg,
+        rgba(255, 71, 87, 0.2) 15deg,
+        rgba(255, 71, 87, 0.35) 25deg,
+        rgba(255, 71, 87, 0.15) 38deg,
+        transparent 55deg
+      ) !important;
+    }
+
+    /* ===== VINILO DE ALTA FIDELIDAD Y MÁXIMO DETALLE ===== */
+    .vinyl {
+      width: 394px;
+      height: 394px;
+      border-radius: 50%;
+      position: absolute;
+      background: 
+        radial-gradient(
+          circle at 50% 50%,
+          transparent 0px,
+          transparent 85px,
+          rgba(6, 7, 9, 0.98) 86px,
+          rgba(18, 20, 26, 0.6) 89px,
+          rgba(8, 8, 11, 0.95) 94px,
+          rgba(16, 18, 24, 0.5) 100px,
+          rgba(6, 7, 9, 0.98) 106px,
+          transparent 107px,
+          transparent 122px,
+          rgba(3, 4, 5, 0.8) 123px,
+          rgba(28, 31, 42, 0.85) 124.5px,
+          rgba(3, 4, 5, 0.8) 126px,
+          transparent 127px,
+          transparent 142px,
+          rgba(3, 4, 5, 0.8) 143px,
+          rgba(28, 31, 42, 0.85) 144.5px,
+          rgba(3, 4, 5, 0.8) 146px,
+          transparent 147px,
+          transparent 164px,
+          rgba(3, 4, 5, 0.8) 165px,
+          rgba(28, 31, 42, 0.85) 166.5px,
+          rgba(3, 4, 5, 0.8) 168px,
+          transparent 169px,
+          transparent 183px,
+          rgba(6, 7, 10, 0.98) 184px,
+          rgba(22, 25, 34, 0.7) 188px,
+          rgba(7, 8, 11, 0.98) 192px,
+          rgba(55, 59, 75, 0.85) 194px,
+          rgba(10, 11, 15, 1) 197px
+        ),
+        repeating-radial-gradient(
+          circle at 50% 50%,
+          #070709 0px,
+          #070709 1px,
+          #1a1c26 1.5px,
+          #040406 2.2px,
+          #08080b 3px
+        );
+      box-shadow: 
+        0 8px 26px rgba(0, 0, 0, 0.96),
+        0 2px 8px rgba(0, 0, 0, 0.85),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.26),
+        inset 0 0 4px 1.5px rgba(0, 0, 0, 0.95),
+        inset 0 0 0 3.5px #0d0e13;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .vinyl::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: 
+        conic-gradient(
+          from 55deg at 50% 50%,
+          transparent 0deg,
+          rgba(255, 255, 255, 0.03) 12deg,
+          rgba(255, 255, 255, 0.14) 30deg,
+          rgba(230, 245, 255, 0.28) 45deg,
+          rgba(255, 255, 255, 0.14) 60deg,
+          rgba(255, 255, 255, 0.03) 78deg,
+          transparent 90deg,
+          rgba(255, 255, 255, 0.02) 115deg,
+          rgba(255, 255, 255, 0.07) 130deg,
+          rgba(255, 255, 255, 0.02) 145deg,
+          transparent 170deg,
+          rgba(255, 255, 255, 0.03) 192deg,
+          rgba(255, 255, 255, 0.14) 210deg,
+          rgba(230, 245, 255, 0.28) 225deg,
+          rgba(255, 255, 255, 0.14) 240deg,
+          rgba(255, 255, 255, 0.03) 258deg,
+          transparent 270deg,
+          rgba(255, 255, 255, 0.02) 295deg,
+          rgba(255, 255, 255, 0.07) 310deg,
+          rgba(255, 255, 255, 0.02) 325deg,
+          transparent 350deg
+        );
+      mask: radial-gradient(circle, transparent 84px, black 86px);
+      -webkit-mask: radial-gradient(circle, transparent 84px, black 86px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .vinyl::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: 
+        conic-gradient(
+          from 42deg at 50% 50%,
+          transparent 0deg,
+          rgba(0, 243, 255, 0.04) 34deg,
+          rgba(255, 42, 110, 0.045) 45deg,
+          rgba(255, 170, 0, 0.035) 56deg,
+          transparent 76deg,
+          transparent 180deg,
+          rgba(0, 243, 255, 0.04) 214deg,
+          rgba(255, 42, 110, 0.045) 225deg,
+          rgba(255, 170, 0, 0.035) 236deg,
+          transparent 256deg,
+          transparent 360deg
+        ),
+        radial-gradient(
+          circle at 50% 50%,
+          transparent 85px,
+          rgba(0, 0, 0, 0.45) 86px,
+          transparent 87px,
+          transparent 93px,
+          rgba(255, 255, 255, 0.06) 94px,
+          transparent 95px,
+          transparent 100px,
+          rgba(255, 255, 255, 0.05) 101px,
+          transparent 102px,
+          transparent 197px
+        );
+      mask: radial-gradient(circle, transparent 84px, black 86px);
+      -webkit-mask: radial-gradient(circle, transparent 84px, black 86px);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .vinyl.spinning {
+      animation: spin-vinyl 1.8s linear infinite;
+    }
+
+    @keyframes spin-vinyl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .album-art-visible {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #101116;
+      background-image: radial-gradient(circle, #22242e 0%, #0d0e13 70%, #060709 100%);
+      box-shadow: 
+        0 0 0 1.5px #07080b,
+        0 0 0 3px rgba(255, 255, 255, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+        inset 0 0 15px rgba(0, 0, 0, 0.8);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .album-art-visible::before {
+      content: '';
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0, 0, 0, 0.35);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 0 4px rgba(0, 0, 0, 0.4);
+      pointer-events: none;
+    }
+
+    .center-spindle {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 32%, #ffffff 0%, #b8bcc8 45%, #30333e 85%, #181920 100%);
+      box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.95),
+        0 0 0 2px #0a0b0e,
+        0 0 0 3px rgba(255, 255, 255, 0.15);
+      z-index: 10;
+      border: 1px solid #2a2c36;
+      pointer-events: none;
+    }
+
+    #sonic_art_full {
+      display: none !important;
+    }
+
+    /* ===== UNIDAD ESTROBOSCÓPICA & INTERRUPTOR ===== */
+    .plx-power-tower {
+      position: absolute;
+      bottom: 130px;
+      left: 18px;
+      width: 48px;
+      height: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 30;
+      transition: all 0.3s ease;
+    }
+
+    .strobe-aperture-box {
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, #2b2d38, #121318);
+      border-radius: 0px;
+      border: 1.5px solid #444856;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .strobe-blue-emitter {
+      width: 10px;
+      height: 10px;
+      border-radius: 0px;
+      background: #ffffff;
+      box-shadow: 0 0 8px var(--pioneer-blue), 0 0 16px var(--neon-cyan), inset 0 0 2px #fff;
+      transition: all 0.3s ease;
+    }
+
+    .plx-power-tower.power-state-off .strobe-blue-emitter {
+      background: #ff4757;
+      box-shadow: 0 0 8px rgba(255, 71, 87, 0.7);
+      opacity: 0.55;
+    }
+
+    .power-rotary-housing {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #1a1c24 45%, #08090c 90%);
+      border: 2px solid #333644;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-top: 2px;
+    }
+
+    .power-ribbed-knob {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: repeating-conic-gradient(#111 0deg 15deg, #2d2e38 15deg 30deg);
+      border: 1px solid #444;
+      box-shadow: inset 0 0 4px #000;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .power-ribbed-knob::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2.5px;
+      height: 7px;
+      background: #ffffff;
+      border-radius: 1px;
+    }
+
+    .power-text-labels {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      font-size: 0.4rem;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      color: #787c8e;
+      pointer-events: none;
+    }
+    .power-text-labels .lbl-off { position: absolute; top: 1px; left: 4px; transition: color 0.3s; }
+    .power-text-labels .lbl-on { position: absolute; top: 1px; right: 4px; color: var(--pioneer-blue); transition: color 0.3s; }
+    .power-text-labels .lbl-pwr { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 0.38rem; }
+
+    .plx-power-tower.power-state-off .power-ribbed-knob {
+      transform: rotate(-30deg);
+    }
+    .plx-power-tower.power-state-off .lbl-off {
+      color: #ff4757;
+      text-shadow: 0 0 6px rgba(255, 71, 87, 0.7);
+    }
+    .plx-power-tower.power-state-off .lbl-on {
+      color: #4a4d5a;
+      text-shadow: none;
+    }
+
+    .plx-power-tower.power-state-on .power-ribbed-knob {
+      transform: rotate(30deg);
+    }
+    .plx-power-tower.power-state-on .lbl-on {
+      color: var(--pioneer-blue);
+      text-shadow: 0 0 6px var(--pioneer-blue);
+    }
+    .plx-power-tower.power-state-on .lbl-off {
+      color: #4a4d5a;
+      text-shadow: none;
+    }
+
+    /* ===== BRAZO METÁLICO EN 'S' ===== */
+    .tonearm-assembly {
+      position: absolute;
+      top: 75px;
+      left: 504px;
+      width: 130px;
+      height: 410px;
+      pointer-events: none;
+      z-index: 25;
+    }
+
+    .gimbal-base {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #1f2029 45%, #0f1015 70%, #050507 100%);
+      border: 2.5px solid #3c3f4e;
+      box-shadow: 
+        0 10px 25px rgba(0,0,0,0.95),
+        inset 0 1px 2px rgba(255,255,255,0.4),
+        0 0 0 2px #14151a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gimbal-ring {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c5cad8, #3b3e4c);
+      border: 1.5px solid #888d9e;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.6), 0 3px 6px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    .gimbal-ring::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -3px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff, #444);
+      transform: translateY(-50%);
+    }
+    .gimbal-ring::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -3px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff, #444);
+      transform: translateY(-50%);
+    }
+
     .tonearm {
       position: absolute;
-      top: 35px;
-      right: 24px;
-      width: 120px;
-      height: 9px;
-      background: linear-gradient(90deg, #666, #aaa);
-      transform-origin: right center;
-      transform: rotate(280deg);
-      transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 9;
-      border-radius: 5px;
-      box-shadow: 
-        0 4px 10px rgba(0,0,0,0.5),
-        inset 0 1px 2px rgba(255,255,255,0.2);
+      top: 53px;
+      left: 53px;
+      width: 85px;
+      height: 250px;
+      transform-origin: 0px 0px;
+      transform: rotate(0deg);
+      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: drop-shadow(-6px 10px 12px rgba(0,0,0,0.92));
+      overflow: visible;
     }
 
     .tonearm.playing {
-      transform: rotate(310deg);
+      transform: rotate(25deg);
     }
 
-    .tonearm-head {
+    .tonearm-svg {
+      width: 100px;
+      height: 270px;
+      overflow: visible;
+    }
+
+    /* ===== PUNTO ESTROBOSCÓPICO NARANJA ===== */
+    .target-lamp-unit {
       position: absolute;
-      left: -9px;
-      top: -6px;
-      width: 21px;
-      height: 21px;
-      background: #1a1a25;
-      border-radius: 7px;
-      transform: rotate(45deg);
-      border: 2px solid #555;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+      top: 325px;
+      left: 543px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: 
+        conic-gradient(
+          from 45deg,
+          #ffffff 0deg,
+          #c8ccd6 45deg,
+          #6c707d 90deg,
+          #ffffff 135deg,
+          #c8ccd6 180deg,
+          #6c707d 225deg,
+          #ffffff 270deg,
+          #c8ccd6 315deg,
+          #6c707d 360deg
+        );
+      border: 1.5px solid #aeb4c6;
+      box-shadow: 
+        0 4px 12px rgba(0,0,0,0.9),
+        inset 0 1px 2px rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 22;
     }
 
-    .tonearm-head::after {
-      content: '';
+    .target-lamp-core {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #20222c 30%, #0d0e13 90%);
+      border: 1.5px solid #3c4052;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .orange-led-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--neon-orange) 45%, #d95500 100%);
+      box-shadow: 
+        0 0 8px var(--neon-orange),
+        0 0 16px rgba(255, 119, 0, 0.8),
+        inset 0 0 2px #fff;
+      animation: pulse-orange-led 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-orange-led {
+      0%, 100% {
+        box-shadow: 0 0 8px var(--neon-orange), 0 0 14px rgba(255, 119, 0, 0.7);
+        filter: brightness(1);
+      }
+      50% {
+        box-shadow: 0 0 12px #ff9426, 0 0 22px rgba(255, 148, 38, 0.95);
+        filter: brightness(1.25);
+      }
+    }
+
+    /* ===== VOLUMEN CALIBRADO VERTICALMENTE ===== */
+    .pitch-fader-assembly {
       position: absolute;
-      bottom: -9px;
-      left: 7px;
-      width: 6px;
-      height: 11px;
-      background: #333;
-      border-radius: 2px;
-    }
-
-    .right-column {
-      position: relative;
+      top: 105px;
+      right: 18px;
       width: 85px;
-      height: 100%;
-      margin-left: 20px;
+      height: 350px;
+      background: linear-gradient(180deg, #14151b, #09090d);
+      border-radius: 4px;
+      border: 1px solid #232530;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.9), 0 4px 12px rgba(0,0,0,0.75);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      touch-action: none;
+      z-index: 20;
+    }
+
+    .volume-scale {
+      position: absolute;
+      left: 12px;
+      top: 30px;
+      bottom: 30px;
+      width: 26px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 10px 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.62rem;
+      pointer-events: none;
     }
 
-    .fader-container {
-      position: relative;
-      width: 40px;
-      height: 190px;
-      background: linear-gradient(180deg, #1a1a25, #0f0f16);
-      border-radius: 20px;
-      border: 2px solid #333;
+    .scale-step {
       display: flex;
-      justify-content: center;
-      padding: 15px 0;
-      box-shadow: 
-        inset 0 0 20px rgba(0,0,0,0.9),
-        0 5px 15px rgba(0,0,0,0.5);
-      z-index: 30;
-      align-self: flex-end;
-      touch-action: none;
+      align-items: center;
+      justify-content: space-between;
+      color: #353846;
+      transition: color 0.12s ease, text-shadow 0.12s ease;
+      line-height: 1;
     }
 
-    /* ✅ BARRA DE VOLUMEN - CAMBIA DE COLOR SEGÚN NIVEL */
+    .scale-step .tick {
+      display: inline-block;
+      width: 6px;
+      height: 1.5px;
+      background: #252835;
+      transition: background 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .scale-step.lit-blue {
+      color: var(--pioneer-blue);
+      text-shadow: 0 0 8px var(--pioneer-blue), 0 0 14px rgba(0, 168, 255, 0.8);
+      font-weight: 800;
+    }
+    .scale-step.lit-blue .tick {
+      background: var(--pioneer-blue);
+      box-shadow: 0 0 6px var(--pioneer-blue);
+    }
+
+    .scale-step.lit-red {
+      color: var(--neon-red);
+      text-shadow: 0 0 8px var(--neon-red), 0 0 14px rgba(255, 42, 75, 0.8);
+      font-weight: 800;
+    }
+    .scale-step.lit-red .tick {
+      background: var(--neon-red);
+      box-shadow: 0 0 6px var(--neon-red);
+    }
+
     .fader-track {
-      position: relative;
-      width: 7px;
-      height: 100%;
-      background: #222;
+      position: absolute;
+      right: 22px;
+      top: 30px;
+      bottom: 30px;
+      width: 6px;
+      background: #050608;
       border-radius: 3px;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
-      transition: background 0.15s ease;
+      box-shadow: inset 0 0 6px #000, 0 1px 1px rgba(255,255,255,0.08);
     }
 
-    .fader-track.high-volume {
-      background: linear-gradient(180deg, var(--neon-green), #00cc7d);
-      box-shadow: 
-        inset 0 0 5px rgba(0,0,0,0.8),
-        0 0 10px var(--neon-green);
-    }
-
-    .fader-track.medium-volume {
-      background: linear-gradient(180deg, #00cc7d, #222);
-      box-shadow: 
-        inset 0 0 5px rgba(0,0,0,0.8),
-        0 0 5px rgba(0, 255, 157, 0.3);
+    .fader-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      border-radius: 3px;
+      background: linear-gradient(to top, var(--pioneer-blue) 0%, var(--neon-cyan) 100%);
+      box-shadow: 0 0 8px var(--pioneer-blue);
+      pointer-events: none;
+      transition: height 0.08s ease-out;
     }
 
     .fader-knob {
       position: absolute;
       left: 50%;
-      bottom: 100%;
+      bottom: 0;
       transform: translateX(-50%);
-      width: 32px;
-      height: 16px;
-      background: linear-gradient(180deg, #e0e0e0, #999);
-      border-radius: 6px;
+      width: 38px;
+      height: 22px;
+      background: linear-gradient(180deg, #f5f6f8 0%, #a2a7b5 45%, #4e5058 50%, #b8bcc8 100%);
+      border-radius: 2px;
       cursor: grab;
-      box-shadow: 
-        0 4px 12px rgba(0,0,0,0.6),
-        inset 0 1px 2px rgba(255,255,255,0.5);
-      border: 1px solid #777;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.85), inset 0 1px 2px rgba(255,255,255,0.9);
+      border: 1px solid #282a33;
       transition: bottom 0.08s ease-out;
       touch-action: none;
+      z-index: 5;
     }
-
     .fader-knob:active {
       cursor: grabbing;
     }
 
-    .fader-knob::after {
+    .fader-knob::before {
       content: '';
       position: absolute;
+      left: 0;
+      right: 0;
       top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 3px;
-      height: 9px;
-      background: #333;
-      border-radius: 2px;
+      height: 2px;
+      background: #ffffff;
+      box-shadow: 0 0 3px #fff;
     }
 
     .fader-label {
       position: absolute;
-      bottom: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.9rem;
-      color: #666;
+      bottom: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.55rem;
+      color: #72768a;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      white-space: nowrap;
+      font-weight: 700;
     }
 
-    .start-stop-container {
-      position: relative;
+    /* ===== BOTONES DE VOLUMEN RÁPIDO ===== */
+    .fader-step-controls {
+      position: absolute;
+      bottom: 25px;
+      right: 18px;
+      width: 85px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      z-index: 25;
+    }
+
+    .vol-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      background: linear-gradient(145deg, #252834, #121318);
+      border: 1.5px solid #3c4052;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.15);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+    .vol-btn:active {
+      transform: scale(0.94);
+    }
+
+    .vol-arrow-svg {
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+      transition: filter 0.2s, opacity 0.2s;
+    }
+
+    .vol-up-btn .vol-arrow-svg {
+      color: var(--pioneer-blue);
+      animation: pulse-arrow-blue 1.6s infinite ease-in-out;
+    }
+    @keyframes pulse-arrow-blue {
+      0%, 100% { opacity: 0.35; filter: drop-shadow(0 0 1px rgba(0, 168, 255, 0.4)); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px var(--pioneer-blue)) drop-shadow(0 0 14px var(--neon-cyan)); }
+    }
+
+    .vol-down-btn .vol-arrow-svg {
+      color: var(--neon-red);
+      animation: pulse-arrow-red 1.6s infinite ease-in-out;
+    }
+    @keyframes pulse-arrow-red {
+      0%, 100% { opacity: 0.35; filter: drop-shadow(0 0 1px rgba(255, 42, 75, 0.4)); }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px var(--neon-red)) drop-shadow(0 0 14px #ff0055); }
+    }
+
+    .vol-up-btn.fast-blink-blue .vol-arrow-svg {
+      animation: rapid-arrow-blue 0.16s infinite alternate !important;
+    }
+    @keyframes rapid-arrow-blue {
+      0% { opacity: 0.2; filter: drop-shadow(0 0 2px var(--pioneer-blue)); }
+      100% { opacity: 1; filter: drop-shadow(0 0 14px #00f3ff) drop-shadow(0 0 20px #fff); }
+    }
+
+    .vol-down-btn.fast-blink-red .vol-arrow-svg {
+      animation: rapid-arrow-red 0.16s infinite alternate !important;
+    }
+    @keyframes rapid-arrow-red {
+      0% { opacity: 0.2; filter: drop-shadow(0 0 2px var(--neon-red)); }
+      100% { opacity: 1; filter: drop-shadow(0 0 14px #ff0055) drop-shadow(0 0 20px #fff); }
+    }
+
+    /* ===== BOTÓN PLAY / STOP ===== */
+    .start-stop-round-btn {
+      position: absolute;
+      bottom: 16px;
+      left: 18px;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: 
+        conic-gradient(
+          from 45deg,
+          #ffffff 0deg,
+          #d8dbe2 30deg,
+          #6c707d 90deg,
+          #ffffff 135deg,
+          #d8dbe2 165deg,
+          #6c707d 225deg,
+          #ffffff 270deg,
+          #d8dbe2 300deg,
+          #6c707d 360deg
+        );
+      border: 1.5px solid #aeb4c6;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      align-self: flex-end;
-    }
-
-    /* ✅ BOTÓN PLAY - PARPADEO CUANDO PAUSADO */
-    .start-stop-btn {
-      width: 52px;
-      height: 52px;
-      background: linear-gradient(145deg, #2a2a35, #1f1f2a);
-      border-radius: 50%;
-      border: 2px solid #444;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
       justify-content: center;
+      gap: 3px;
       box-shadow: 
-        0 8px 20px rgba(0,0,0,0.6),
-        inset 0 2px 5px rgba(255,255,255,0.1);
-      transition: all 0.2s;
+        0 0 0 2.5px rgba(0, 168, 255, 0.4),
+        0 8px 20px rgba(0,0,0,0.9),
+        inset 0 1px 2px rgba(255,255,255,0.95),
+        inset 0 -2px 4px rgba(0,0,0,0.6);
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      z-index: 20;
     }
 
-    /* ✅ PARPADEO VERDE CUANDO PAUSADO */
-    .start-stop-btn:not(.playing) {
-      animation: blink-green 1.5s ease-in-out infinite;
+    .start-stop-round-btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.9);
     }
 
-    @keyframes blink-green {
-      0%, 100% {
-        background: linear-gradient(145deg, #2a2a35, #1f1f2a);
-        border-color: #444;
-        box-shadow: 
-          0 8px 20px rgba(0,0,0,0.6),
-          inset 0 2px 5px rgba(255,255,255,0.1);
-      }
-      50% {
-        background: linear-gradient(145deg, var(--neon-green), #00cc7d);
-        border-color: var(--neon-green);
-        box-shadow: 
-          var(--glow-green),
-          0 8px 25px rgba(0, 255, 157, 0.4),
-          inset 0 2px 5px rgba(255,255,255,0.3);
-      }
+    .btn-word {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      line-height: 1.15;
+      text-align: center;
+      transition: all 0.2s ease;
+      -webkit-text-stroke: 1px #05060a;
+      paint-order: stroke fill;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
     }
 
-    .start-stop-btn:active {
-      transform: scale(0.95);
-      box-shadow: 
-        0 4px 10px rgba(0,0,0,0.6),
-        inset 0 2px 5px rgba(255,255,255,0.1);
+    .start-stop-round-btn:not(.playing) .play-word {
+      color: #00f3ff;
+      animation: blink-blue-text 1.2s infinite ease-in-out;
     }
 
-    /* ✅ VERDE SÓLIDO CUANDO REPRODUCIENDO */
-    .start-stop-btn.playing {
-      background: linear-gradient(145deg, var(--neon-green), #00cc7d);
-      border-color: var(--neon-green);
-      box-shadow: 
-        var(--glow-green),
-        0 8px 25px rgba(0, 255, 157, 0.4),
-        inset 0 2px 5px rgba(255,255,255,0.3);
+    .start-stop-round-btn:not(.playing) .stop-word {
+      color: #ff2a4b;
+      text-shadow: 0 0 10px #ff2a4b;
+      opacity: 1;
       animation: none;
     }
 
-    .play-icon {
-      width: 0;
-      height: 0;
-      border-top: 9px solid transparent;
-      border-bottom: 9px solid transparent;
-      border-left: 14px solid #888;
-      margin-left: 3px;
-      transition: all 0.2s;
+    @keyframes blink-blue-text {
+      0%, 100% {
+        opacity: 0.4;
+        text-shadow: none;
+      }
+      50% {
+        opacity: 1;
+        text-shadow: 0 0 12px #00f3ff, 0 0 20px #00a8ff;
+      }
     }
 
-    .start-stop-btn.playing .play-icon {
-      border-left: none;
-      border-top: none;
-      border-bottom: none;
-      width: 13px;
-      height: 13px;
-      background: #111;
-      margin-left: 0;
-      box-shadow: 4px 0 0 #111, -4px 0 0 #111;
+    .start-stop-round-btn.playing .play-word {
+      color: #00f3ff;
+      text-shadow: 0 0 8px #00f3ff;
+      opacity: 1;
+      animation: none;
     }
 
-    .start-stop-label {
-      font-size: 0.9rem;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-top: 8px;
-      text-align: center;
+    .start-stop-round-btn.playing .stop-word {
+      color: #ff1744;
+      animation: blink-red-text 1.2s infinite ease-in-out;
     }
 
-    footer {
-      width: 100%;
-      padding: 15px 10px;
-      background: rgba(26, 26, 36, 0.8);
-      border-top: 1px solid rgba(0, 243, 255, 0.3);
+    @keyframes blink-red-text {
+      0%, 100% {
+        opacity: 0.35;
+        text-shadow: none;
+      }
+      50% {
+        opacity: 1;
+        text-shadow: 0 0 12px #ff1744, 0 0 20px #ff0055;
+      }
+    }
+
+    .start-stop-round-btn:not(.playing) {
+      animation: pulse-btn-halo 1.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulse-btn-halo {
+      0% { box-shadow: 0 0 0 2.5px rgba(0, 168, 255, 0.3), 0 8px 20px rgba(0,0,0,0.9); }
+      100% { box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.95), 0 0 20px rgba(0, 168, 255, 0.75), 0 8px 20px rgba(0,0,0,0.9); }
+    }
+
+    .start-stop-round-btn.playing {
+      border-color: var(--pioneer-blue);
+      box-shadow: 0 0 0 4px var(--pioneer-blue), 0 0 24px rgba(0, 168, 255, 0.85), 0 8px 20px rgba(0,0,0,0.9);
+      animation: none;
+    }
+
+    /* BOTONES 33 Y 45 RPM */
+    .rpm-buttons {
+      position: absolute;
+      bottom: 24px;
+      left: 104px;
       display: flex;
-      justify-content: center;
-      gap: 25px;
-      margin-top: 15px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
+      gap: 5px;
+      z-index: 20;
     }
 
-    .footer-btn {
-      position: relative;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.2);
-      cursor: pointer;
+    .rpm-btn {
+      width: 32px;
+      height: 22px;
+      background: linear-gradient(180deg, #242630, #13141a);
+      border: 1px solid #3c3f4e;
+      color: #717588;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      border-radius: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s;
-      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+      transition: all 0.15s ease;
+    }
+    .rpm-btn:active {
+      transform: translateY(1px);
+    }
+    .rpm-btn.active {
+      color: var(--pioneer-blue);
+      border-color: var(--pioneer-blue);
+      box-shadow: 0 0 6px rgba(0, 168, 255, 0.5);
     }
 
-    .footer-btn::before {
-      content: '';
-      position: absolute;
-      width: 70%;
-      height: 70%;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.1);
+    /* ===== PIE DE PÁGINA CYBERPUNK (Copyright 2026 | Castle) ===== */
+    footer.castle-footer {
+      width: 100%;
+      padding: 16px 15px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
     }
 
-    .footer-btn::after {
-      content: '';
-      position: absolute;
-      width: 40%;
-      height: 40%;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.15);
+    .footer-neon-glow-line {
+      width: clamp(180px, 50%, 420px);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan) 30%, var(--neon-pink) 70%, transparent);
+      box-shadow: 0 0 8px var(--neon-cyan);
+      margin-bottom: 12px;
+      opacity: 0.6;
     }
 
-    .footer-btn.chat {
-      background: radial-gradient(circle at 30% 30%, #4a9eff, #0066cc);
-      box-shadow: 0 0 15px rgba(0, 102, 204, 0.5);
-    }
-
-    .footer-btn.playlist {
-      background: radial-gradient(circle at 30% 30%, #4aff9e, #00cc66);
-      box-shadow: 0 0 15px rgba(0, 204, 102, 0.5);
-    }
-
-    .footer-btn.donate {
-      background: radial-gradient(circle at 30% 30%, #808080, #404040);
-      box-shadow: 0 0 15px rgba(128, 128, 128, 0.5);
-    }
-
-    .footer-btn .center-hole {
-      position: absolute;
-      width: 15%;
-      height: 15%;
-      background: var(--bg-dark);
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.3);
-      z-index: 2;
-    }
-
-    .footer-btn .btn-label {
-      position: absolute;
-      bottom: -22px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.9rem;
-      font-weight: 400;
-      text-transform: uppercase;
+    .footer-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.72rem, 2.2vw, 0.9rem);
       letter-spacing: 3px;
-      color: var(--text-main);
-      opacity: 0;
-      transition: all 0.3s;
-      white-space: nowrap;
-      text-shadow: 0 0 10px currentColor;
-    }
-
-    .footer-btn:hover {
-      transform: scale(1.1) rotate(5deg);
-    }
-
-    .footer-btn.chat:hover {
-      box-shadow: 0 0 25px rgba(0, 102, 204, 0.8), var(--glow-blue);
-      border-color: var(--neon-blue);
-    }
-
-    .footer-btn.chat:hover .btn-label {
-      opacity: 1;
-      color: var(--neon-blue);
-      bottom: -20px;
-    }
-
-    .footer-btn.playlist:hover {
-      box-shadow: 0 0 25px rgba(0, 204, 102, 0.8), var(--glow-green);
-      border-color: var(--neon-green);
-    }
-
-    .footer-btn.playlist:hover .btn-label {
-      opacity: 1;
-      color: var(--neon-green);
-      bottom: -20px;
-    }
-
-    .footer-btn.donate:hover {
-      box-shadow: 0 0 25px rgba(128, 128, 128, 0.8);
-      border-color: #808080;
-    }
-
-    .footer-btn.donate:hover .btn-label {
-      opacity: 1;
-      color: #a0a0a0;
-      bottom: -20px;
-    }
-
-    /* ✅ RESPONSIVE - ESCALADO PROPORCIONAL SIN CAMBIAR DISTRIBUCIÓN */
-    /* Tablet */
-    @media (max-width: 650px) {
-      .turntable-wrapper {
-        transform: scale(0.85);
-        margin: 10px 0;
-      }
-      
-      .logo {
-        font-size: 2.2rem;
-        letter-spacing: 6px;
-      }
-    }
-
-    /* Móvil grande */
-    @media (max-width: 500px) {
-      .turntable-wrapper {
-        transform: scale(0.75);
-        margin: 5px 0;
-      }
-      
-      .logo {
-        font-size: 2rem;
-        letter-spacing: 5px;
-      }
-    }
-
-    /* Móvil mediano */
-    @media (max-width: 420px) {
-      .turntable-wrapper {
-        transform: scale(0.68);
-        margin: 0 0 5px 0;
-      }
-      
-      .logo {
-        font-size: 1.8rem;
-        letter-spacing: 4px;
-      }
-    }
-
-    /* Móvil pequeño */
-    @media (max-width: 360px) {
-      .turntable-wrapper {
-        transform: scale(0.62);
-        margin: 0 0 5px 0;
-      }
-      
-      .logo {
-        font-size: 1.6rem;
-        letter-spacing: 3px;
-      }
+      text-transform: uppercase;
+      color: #9aa8c6;
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">CASTLEBUL</div>
+  <!-- Filtro CRT y Elementos de Fondo 80s/90s Cyberpunk -->
+  <div class="crt-scanlines"></div>
+  <div class="synth-sun-backdrop"></div>
+  <div class="cyber-horizon-glow"></div>
+  <div class="cyber-grid-floor"></div>
+
+  <!-- TÍTULO SUPERIOR EXCLUSIVO: CASTLE -->
+  <header class="castle-header">
+    <h1 class="castle-title">CASTLE</h1>
   </header>
 
-  <div class="main-content">
-    <div class="turntable-wrapper">
-      <div class="turntable-body">
-        <div class="left-column">
-          <div class="song-title-container">
-            <div id="sonic_title">Castlebul Radio</div>
+  <!-- CONTENEDOR CENTRAL: CENTRA VERTICALMENTE EL TOCADISCOS -->
+  <main class="center-stage">
+    <div class="player-outer-bounds" id="player-bounds">
+      <div class="turntable-viewport" id="turntable-viewport">
+        
+        <div class="turntable-wrapper" id="turntable-wrapper">
+          
+          <!-- Adaptador 45 RPM grande de aluminio pulido (72px / 60px) -->
+          <div class="rpm45-well" title="Adaptador 45 RPM">
+            <div class="rpm45-puck"></div>
           </div>
 
-          <div class="platter-section">
+          <!-- Pantalla OLED / VFD con filtro CRT suave -->
+          <div class="vfd-console">
+            <div class="crt-overlay"></div>
+
+            <div class="vfd-status-bar">
+              <div class="live-badge">
+                <span class="live-radar">
+                  <span class="radar-core"></span>
+                  <span class="radar-wave"></span>
+                </span>
+                <span class="live-text">DJ EN VIVO</span>
+              </div>
+
+              <!-- NOMBRE DEL DJ EN NARANJA Y TAMAÑO DEL TÍTULO -->
+              <div class="dj-live-widget">
+                <span id="dj_display">Auto Dj</span>
+                <span id="sonic_dj" style="display:none !important;"></span>
+                <span id="sonic_djonair" style="display:none !important;"></span>
+              </div>
+            </div>
+            
+            <!-- Marquesina continua con bucle infinito y suave -->
+            <div class="vfd-title-container">
+              <div class="vfd-marquee-track" id="vfd-marquee-track">
+                <span class="marquee-text" id="sonic_title">Castlebul Radio</span>
+                <span class="marquee-divider">✦</span>
+                <span class="marquee-text" id="sonic_title_dup">Castlebul Radio</span>
+                <span class="marquee-divider">✦</span>
+              </div>
+            </div>
+
+            <!-- Ecualizador dinámico multicolor y con amplio rebote -->
+            <div class="visualizer" id="visualizer"></div>
+          </div>
+
+          <!-- Placa de especificaciones Pioneer PLX-1000 (Top-Right) -->
+          <div class="pioneer-specs">
+            <strong>Pioneer</strong><br>PROFESSIONAL TURNTABLE PLX-1000
+          </div>
+
+          <!-- Cuenca centrada verticalmente 50/50 -->
+          <div class="platter-bay">
             <div class="platter" id="platter">
+              <div class="platter-strobe-reflection dim-red" id="platter-strobe-reflection"></div>
+
               <div class="vinyl" id="vinyl">
-                <!-- ✅ ELEMENTO VISIBLE - Usa background-image -->
-                <div class="album-art-visible" id="album-art-visible">
-                  <div class="fallback">
-                    Castlebul<br>Radio
-                  </div>
-                </div>
-                <!-- ✅ SONIC_ART_FULL - OCULTO (solo para datos) -->
+                <div class="album-art-visible" id="album-art-visible"></div>
+                <div class="center-spindle"></div>
                 <div id="sonic_art_full" style="display:none !important;"></div>
               </div>
             </div>
           </div>
 
-          <div class="visualizer-section">
-            <div class="visualizer" id="visualizer"></div>
+          <!-- UNIDAD ESTROBOSCÓPICA & INTERRUPTOR (CAJA TOTALMENTE CUADRADA) -->
+          <div class="plx-power-tower power-state-off" id="power-tower">
+            <div class="strobe-aperture-box">
+              <div class="strobe-blue-emitter"></div>
+            </div>
+            
+            <div class="power-rotary-housing">
+              <div class="power-ribbed-knob"></div>
+              <div class="power-text-labels">
+                <span class="lbl-off">OFF</span>
+                <span class="lbl-on">ON</span>
+                <span class="lbl-pwr">POWER</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="tonearm-assembly">
-          <div class="tonearm-base">
-            <div class="tonearm-pivot"></div>
-          </div>
-          <div class="tonearm" id="tonearm">
-            <div class="tonearm-head"></div>
-          </div>
-        </div>
+          <!-- BRAZO METÁLICO EN 'S' MÁS GRUESO Y AGUJA COLOR DIAMANTE -->
+          <div class="tonearm-assembly">
+            <div class="gimbal-base">
+              <div class="gimbal-ring"></div>
+            </div>
+            
+            <div class="tonearm" id="tonearm">
+              <svg class="tonearm-svg" viewBox="0 0 100 270">
+                <defs>
+                  <linearGradient id="chromeTubeThick" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#3a3a3a" />
+                    <stop offset="20%" stop-color="#999999" />
+                    <stop offset="40%" stop-color="#ffffff" />
+                    <stop offset="65%" stop-color="#d0d0d0" />
+                    <stop offset="85%" stop-color="#777777" />
+                    <stop offset="100%" stop-color="#222222" />
+                  </linearGradient>
+                  
+                  <linearGradient id="pioneerHeadshellThick" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#3c3f4d" />
+                    <stop offset="100%" stop-color="#121318" />
+                  </linearGradient>
+                  
+                  <linearGradient id="diamondTipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="35%" stop-color="#bbf2f6" />
+                    <stop offset="70%" stop-color="#70d6ff" />
+                    <stop offset="100%" stop-color="#ffffff" />
+                  </linearGradient>
+                  
+                  <linearGradient id="counterweightGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#222" />
+                    <stop offset="35%" stop-color="#e6e6e6" />
+                    <stop offset="70%" stop-color="#888" />
+                    <stop offset="100%" stop-color="#111" />
+                  </linearGradient>
+                </defs>
 
-        <div class="right-column">
-          <div class="fader-container" id="fader-container">
+                <rect x="-15" y="-30" width="30" height="24" rx="2" fill="url(#counterweightGrad)" stroke="#444" stroke-width="1" />
+                <rect x="-15" y="-12" width="30" height="6" fill="#111" />
+                <line x1="-8" y1="-12" x2="-8" y2="-6" stroke="#fff" stroke-width="1" />
+                <line x1="0" y1="-12" x2="0" y2="-6" stroke="#fff" stroke-width="1" />
+                <line x1="8" y1="-12" x2="8" y2="-6" stroke="#fff" stroke-width="1" />
+
+                <circle cx="0" cy="0" r="8" fill="#c8cddc" stroke="#222" stroke-width="2" />
+                <circle cx="0" cy="0" r="3" fill="#222" />
+
+                <path d="M 0,0 C 18,45 22,110 -8,175 L -14,195" 
+                      fill="none" 
+                      stroke="url(#chromeTubeThick)" 
+                      stroke-width="8.5" 
+                      stroke-linecap="round" />
+
+                <g transform="translate(-14, 195) rotate(-14)">
+                  <rect x="-6" y="-7" width="12" height="7" rx="1" fill="#c2c7d6" stroke="#222" stroke-width="1" />
+                  <rect x="-10" y="0" width="20" height="40" rx="3" fill="url(#pioneerHeadshellThick)" stroke="#555" stroke-width="1.2" />
+                  <line x1="-5" y1="9" x2="5" y2="9" stroke="#888" stroke-width="1.5" />
+                  <line x1="-5" y1="16" x2="5" y2="16" stroke="#888" stroke-width="1.5" />
+                  <path d="M 10,12 Q 22,12 19,24" fill="none" stroke="#eee" stroke-width="2.8" stroke-linecap="round" />
+                  <polygon points="-4,40 4,40 0,49" fill="url(#diamondTipGrad)" stroke="#bbf2f6" stroke-width="0.8" style="filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.9));" />
+                  <polygon points="-2,40 2,40 0,47" fill="#ffffff" opacity="0.9" />
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- CÍRCULO CON PUNTO NARANJA CENTRADO HORIZONTALMENTE -->
+          <div class="target-lamp-unit" id="target-lamp" title="Stylus Target Lamp">
+            <div class="target-lamp-core">
+              <div class="orange-led-dot"></div>
+            </div>
+          </div>
+
+          <!-- FADER DE VOLUMEN CON ESCALA CALIBRADA -->
+          <div class="pitch-fader-assembly" id="fader-container">
+            <div class="volume-scale" id="volume-scale">
+              <div class="scale-step" data-val="10"><span>10</span><i class="tick"></i></div>
+              <div class="scale-step" data-val="8"><span>8</span><i class="tick"></i></div>
+              <div class="scale-step" data-val="6"><span>6</span><i class="tick"></i></div>
+              <div class="scale-step" data-val="4"><span>4</span><i class="tick"></i></div>
+              <div class="scale-step" data-val="2"><span>2</span><i class="tick"></i></div>
+              <div class="scale-step" data-val="0"><span>0</span><i class="tick"></i></div>
+            </div>
+
             <div class="fader-track" id="fader-track">
+              <div class="fader-fill" id="fader-fill"></div>
               <div class="fader-knob" id="fader-knob"></div>
             </div>
-            <div class="fader-label">Volume</div>
+
+            <div class="fader-label">VOLUME</div>
           </div>
 
-          <div class="start-stop-container">
-            <div class="start-stop-btn" id="play-btn">
-              <div class="play-icon"></div>
-            </div>
-            <div class="start-stop-label" id="start-stop-label">Start</div>
+          <!-- BOTONES DE VOLUMEN RÁPIDO (+20% y -20%) -->
+          <div class="fader-step-controls">
+            <button class="vol-btn vol-up-btn" id="vol-up-btn" title="Aumentar volumen (+20%)">
+              <svg viewBox="0 0 24 24" class="vol-arrow-svg">
+                <path d="M15 19l-7-7 7-7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="vol-btn vol-down-btn" id="vol-down-btn" title="Bajar volumen (-20%)">
+              <svg viewBox="0 0 24 24" class="vol-arrow-svg">
+                <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
+
+          <!-- BOTÓN PLAY / STOP -->
+          <div class="start-stop-round-btn" id="play-btn">
+            <span class="btn-word play-word">PLAY</span>
+            <span class="btn-word stop-word">STOP</span>
+          </div>
+
+          <!-- BOTONES 33 Y 45 RPM -->
+          <div class="rpm-buttons">
+            <button class="rpm-btn active" id="rpm-33-btn">33</button>
+            <button class="rpm-btn" id="rpm-45-btn">45</button>
+          </div>
+
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
-  <footer>
-    <button class="footer-btn chat" onclick="showAlert('Chat en vivo')">
-      <div class="center-hole"></div>
-      <span class="btn-label">Chat</span>
-    </button>
-    <button class="footer-btn playlist" onclick="showAlert('Playlist actual')">
-      <div class="center-hole"></div>
-      <span class="btn-label">Playlist</span>
-    </button>
-    <button class="footer-btn donate" onclick="showAlert('Sistema de donaciones')">
-      <div class="center-hole"></div>
-      <span class="btn-label">Donar</span>
-    </button>
+  <!-- PIE DE PÁGINA: COPYRIGHT 2026 | CASTLE -->
+  <footer class="castle-footer">
+    <div class="footer-neon-glow-line"></div>
+    <p class="footer-text">Copyright 2026 | Castle</p>
   </footer>
 
   <audio id="audio-player" crossorigin="anonymous">
-    <source src="https://mars.streamerr.co/8422/stream  " type="audio/mpeg">
+    <source src="https://mars.streamerr.co/8422/stream" type="audio/mpeg">
   </audio>
 
   <script>
     (function() {
       const audio = document.getElementById('audio-player');
       const playBtn = document.getElementById('play-btn');
-      const startStopLabel = document.getElementById('start-stop-label');
       const vinyl = document.getElementById('vinyl');
       const tonearm = document.getElementById('tonearm');
       const faderKnob = document.getElementById('fader-knob');
+      const faderFill = document.getElementById('fader-fill');
       const faderContainer = document.getElementById('fader-container');
       const faderTrack = document.getElementById('fader-track');
       const visualizer = document.getElementById('visualizer');
       const sonicTitle = document.getElementById('sonic_title');
+      const sonicTitleDup = document.getElementById('sonic_title_dup');
+      const marqueeTrack = document.getElementById('vfd-marquee-track');
       const albumArtVisible = document.getElementById('album-art-visible');
       const sonicArtFull = document.getElementById('sonic_art_full');
       const platter = document.getElementById('platter');
+      const scaleSteps = document.querySelectorAll('.scale-step');
+      const volUpBtn = document.getElementById('vol-up-btn');
+      const volDownBtn = document.getElementById('vol-down-btn');
+      const powerTower = document.getElementById('power-tower');
+      const platterReflection = document.getElementById('platter-strobe-reflection');
+      const rpm33Btn = document.getElementById('rpm-33-btn');
+      const rpm45Btn = document.getElementById('rpm-45-btn');
+
+      const djDisplay = document.getElementById('dj_display');
+      const sonicDj = document.getElementById('sonic_dj');
+      const sonicDjOnAir = document.getElementById('sonic_djonair');
+
+      const playerBounds = document.getElementById('player-bounds');
+      const turntableViewport = document.getElementById('turntable-viewport');
+      const castleHeader = document.querySelector('.castle-header');
+      const castleFooter = document.querySelector('.castle-footer');
+
+      const STREAM_URL = 'https://mars.streamerr.co/8422/stream';
 
       let isPlaying = false;
       let volume = 1.0;
@@ -872,25 +1714,126 @@
       let displayedArtUrl = null;
       let displayedTitle = null;
       let artUpdateInterval = null;
-      let previousDataArray = null;
-      
-      // ✅ VARIABLES PARA LED RGB DEL BOMBO
-      let currentHue = 0;
-      let targetHue = 0;
-      let bassThreshold = 180;
-      let lastBassHit = 0;
-      let bassCooldown = 100;
+      let volUpTimeout = null;
+      let volDownTimeout = null;
+      let currentMarqueeText = '';
 
-      function showAlert(message) {
-        alert(`${message}\n\nPróximamente disponible en Castlebul Radio.`);
+      // Paleta rítmica de 4 colores
+      const RHYTHM_COLORS = [
+        { glow: 'rgba(0, 168, 255, ',   border: 'rgba(0, 243, 255, ' },
+        { glow: 'rgba(255, 42, 75, ',    border: 'rgba(255, 71, 87, ' },
+        { glow: 'rgba(255, 153, 0, ',    border: 'rgba(255, 170, 0, ' },
+        { glow: 'rgba(238, 241, 246, ',  border: 'rgba(255, 255, 255, ' }
+      ];
+      let rhythmColorIndex = 0;
+      let lastBassHit = 0;
+      const bassCooldown = 220;
+
+      // ✅ ESCALADO GEOMÉTRICO Y CENTRADO DINÁMICO
+      function fitTurntableToScreen() {
+        if (!playerBounds || !turntableViewport) return;
+        
+        const availableWidth = playerBounds.clientWidth;
+        const nativeWidth = 730;
+        const nativeHeight = 560;
+
+        // Escala por ancho
+        let scale = availableWidth / nativeWidth;
+
+        // Escala por alto (para que nunca desborde verticalmente ni en móviles apaisados)
+        const headerH = castleHeader ? castleHeader.offsetHeight : 80;
+        const footerH = castleFooter ? castleFooter.offsetHeight : 60;
+        const availableHeight = window.innerHeight - headerH - footerH - 30;
+
+        if (availableHeight > 100) {
+          const scaleHeight = availableHeight / nativeHeight;
+          scale = Math.min(scale, scaleHeight);
+        }
+
+        if (scale > 1) scale = 1;
+        if (scale < 0.35) scale = 0.35; // Umbral de legibilidad
+
+        document.documentElement.style.setProperty('--scale', scale);
+        turntableViewport.style.height = `${nativeHeight * scale}px`;
       }
 
-      window.showAlert = showAlert;
+      window.addEventListener('resize', fitTurntableToScreen);
+      window.addEventListener('orientationchange', fitTurntableToScreen);
+      fitTurntableToScreen();
+
+      // FILTRO DE DJ
+      function parseDJName(name) {
+        if (!name) return 'Auto Dj';
+        const clean = name.trim();
+        if (/^no\s*dj$/i.test(clean) || clean === '' || clean.toLowerCase() === 'nodj' || clean.toLowerCase() === 'no_dj') {
+          return 'Auto Dj';
+        }
+        return clean;
+      }
+
+      function checkDJElements() {
+        const rawName = (sonicDj && sonicDj.textContent) || (sonicDjOnAir && sonicDjOnAir.textContent) || '';
+        if (djDisplay && rawName) {
+          djDisplay.textContent = parseDJName(rawName);
+        }
+      }
+
+      const djObserver = new MutationObserver(() => {
+        checkDJElements();
+      });
+      if (sonicDj) djObserver.observe(sonicDj, { childList: true, characterData: true, subtree: true });
+      if (sonicDjOnAir) djObserver.observe(sonicDjOnAir, { childList: true, characterData: true, subtree: true });
+
+      async function fetchLiveDJ() {
+        try {
+          const res = await fetch('https://mars.streamerr.co/cp/get_info.php?p=8422');
+          if (res.ok) {
+            const data = await res.json();
+            const djName = data.djusername || data.dj || data.dj_name || '';
+            if (djDisplay) {
+              djDisplay.textContent = parseDJName(djName);
+            }
+          }
+        } catch (e) {}
+      }
+      setInterval(fetchLiveDJ, 10000);
+      fetchLiveDJ();
+
+      // MARQUESINA CONTINUA Y SUAVE
+      function updateMarqueeTitle(title) {
+        if (!title) return;
+        const cleanTitle = title.trim();
+        if (cleanTitle === currentMarqueeText) return;
+        currentMarqueeText = cleanTitle;
+
+        if (sonicTitle) sonicTitle.textContent = cleanTitle;
+        if (sonicTitleDup) sonicTitleDup.textContent = cleanTitle;
+
+        requestAnimationFrame(() => {
+          if (!sonicTitle || !marqueeTrack) return;
+          const charCount = cleanTitle.length;
+          const duration = Math.max(14, Math.round(charCount * 0.45));
+          marqueeTrack.style.animationDuration = `${duration}s`;
+        });
+      }
+
+      let lastObservedTitle = '';
+      const titleObserver = new MutationObserver(() => {
+        const text = sonicTitle.textContent.trim();
+        if (text && text !== lastObservedTitle && text !== displayedTitle) {
+          lastObservedTitle = text;
+          displayedTitle = text;
+          updateMarqueeTitle(text);
+        }
+      });
+      if (sonicTitle) {
+        titleObserver.observe(sonicTitle, { childList: true, characterData: true, subtree: true });
+      }
 
       function initVisualizer() {
         visualizer.innerHTML = '';
-        const barCount = 20;
-        for(let i = 0; i < barCount; i++) {
+        const barCount = 28;
+        for (let i = 0; i < barCount; i++) {
           const bar = document.createElement('div');
           bar.className = 'eq-bar';
           visualizer.appendChild(bar);
@@ -903,255 +1846,287 @@
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioContext.createAnalyser();
             analyser.fftSize = 512;
-            analyser.smoothingTimeConstant = 0.7;
-            const bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
-            previousDataArray = new Uint8Array(bufferLength);
             
+            analyser.minDecibels = -75;
+            analyser.maxDecibels = -8;
+            analyser.smoothingTimeConstant = 0.7;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+
             const source = audioContext.createMediaElementSource(audio);
             source.connect(analyser);
             analyser.connect(audioContext.destination);
-            
+
             renderVisualizer();
           } catch (e) {
-            console.warn("Web Audio API error:", e);
+            console.warn("Web Audio API warning:", e);
           }
         }
-        if (audioContext.state === 'suspended') {
+        if (audioContext && audioContext.state === 'suspended') {
           await audioContext.resume();
         }
       }
 
-      function updatePlatterLED(bassLevel) {
+      // ILUMINACIÓN DEL BORDE REACTIVA
+      function updatePlatterLight(bassLevel, isBassHit) {
         const now = Date.now();
-        
-        if (bassLevel > bassThreshold && (now - lastBassHit) > bassCooldown) {
+        if (isBassHit && (now - lastBassHit) > bassCooldown) {
           lastBassHit = now;
-          targetHue = Math.floor(Math.random() * 360);
+          rhythmColorIndex = (rhythmColorIndex + 1) % RHYTHM_COLORS.length;
         }
-        
-        currentHue = currentHue + (targetHue - currentHue) * 0.1;
-        
-        const intensity = Math.min(0.4, 0.15 + (bassLevel / 255) * 0.25);
-        const glowSize = 15 + (bassLevel / 255) * 20;
-        
-        const rgbColor = `hsla(${currentHue}, 80%, 60%, ${intensity})`;
-        const borderColor = `hsla(${currentHue}, 80%, 60%, ${intensity * 0.8})`;
-        
+
+        const activeCol = RHYTHM_COLORS[rhythmColorIndex];
+
+        const intensity = Math.min(0.72, 0.16 + (bassLevel / 255) * 0.48);
+        const glow = 14 + (bassLevel / 255) * 26;
+        const innerGlow = 6 + (bassLevel / 255) * 16;
+
         platter.style.boxShadow = `
-          0 10px 30px rgba(0,0,0,0.7),
-          inset 0 0 20px rgba(0,0,0,0.5),
-          0 0 ${glowSize}px ${rgbColor},
-          0 0 ${glowSize * 2}px ${rgbColor.replace('0.4', '0.15')}
+          0 10px 30px rgba(0,0,0,0.95),
+          inset 0 0 ${innerGlow}px ${activeCol.glow}${intensity * 0.65}),
+          0 0 ${glow}px ${activeCol.glow}${intensity}),
+          0 0 ${glow * 1.5}px ${activeCol.glow}${intensity * 0.35})
         `;
-        platter.style.borderColor = borderColor;
+        platter.style.borderColor = `${activeCol.border}${0.35 + intensity * 0.55})`;
+
+        if (platterReflection && !platterReflection.classList.contains('dim-red')) {
+          platterReflection.style.opacity = Math.min(1, intensity * 1.3);
+          platterReflection.style.background = `conic-gradient(
+            from 185deg at 50% 50%,
+            transparent 0deg,
+            ${activeCol.glow}0.4) 15deg,
+            ${activeCol.border}0.7) 25deg,
+            ${activeCol.glow}0.25) 38deg,
+            transparent 55deg
+          )`;
+        }
       }
 
+      // ECUALIZADOR DINÁMICO
       function renderVisualizer() {
         if (!analyser || !dataArray) return;
-        
+
         analyser.getByteFrequencyData(dataArray);
         const bars = document.querySelectorAll('.eq-bar');
         const barCount = bars.length;
         const bufferLength = dataArray.length;
-        
-        let totalSum = 0;
-        for(let i = 0; i < bufferLength; i++) {
-          totalSum += dataArray[i];
-        }
-        const average = totalSum / bufferLength;
-        
-        const kickBins = dataArray.slice(0, 4);
-        const kickLevel = kickBins.reduce((a, b) => a + b, 0) / kickBins.length;
-        
-        const bassBins = dataArray.slice(0, 5);
-        const bassAvg = bassBins.reduce((a, b) => a + b, 0) / bassBins.length;
-        const isBassHit = bassAvg > 160;
 
-        updatePlatterLED(kickLevel);
+        const kickBins = dataArray.slice(0, 4);
+        const bassLevel = kickBins.reduce((a, b) => a + b, 0) / kickBins.length;
+        const isBassHit = bassLevel > 182;
+
+        updatePlatterLight(bassLevel, isBassHit);
 
         bars.forEach((bar, i) => {
           const percent = i / barCount;
-          const binIndex = Math.floor(Math.pow(percent, 0.7) * (bufferLength * 0.8));
-          
-          let value = dataArray[binIndex] || 0;
-          
-          if (value < 10) {
-            const neighbors = [
-              dataArray[Math.max(0, binIndex - 1)] || 0,
-              dataArray[Math.min(bufferLength - 1, binIndex + 1)] || 0,
-              dataArray[Math.max(0, binIndex - 2)] || 0,
-              dataArray[Math.min(bufferLength - 1, binIndex + 2)] || 0
-            ];
-            const neighborAvg = neighbors.reduce((a, b) => a + b, 0) / neighbors.length;
-            value = Math.max(value, neighborAvg * 0.5);
-          }
-          
-          value = Math.max(value, average * 0.3);
-          
-          const percent_normalized = Math.min(1, (value / 255) * 1.3);
-          const height = Math.max(15, percent_normalized * 100);
-          
-          bar.style.height = `${height}%`;
-          
-          if (isBassHit && i < 6) {
+          const binIndex = Math.min(
+            bufferLength - 1,
+            Math.floor(Math.pow(percent, 1.35) * (bufferLength * 0.6)) + 1
+          );
+
+          const freqBoost = 1.0 + Math.sin(percent * Math.PI * 0.5) * 0.8 + percent * 0.9;
+          let val = (dataArray[binIndex] || 0) * freqBoost;
+          val = Math.min(255, val);
+
+          let ratio = val / 255;
+          ratio = Math.pow(ratio, 1.25);
+
+          const heightPercent = Math.max(10, Math.min(92, ratio * 92));
+          bar.style.height = `${heightPercent}%`;
+
+          if (isBassHit) {
             bar.classList.add('bass-hit');
           } else {
             bar.classList.remove('bass-hit');
           }
         });
 
-        previousDataArray.set(dataArray);
-
         animationId = requestAnimationFrame(renderVisualizer);
       }
 
+      // TOGGLE PLAY / STOP
       async function togglePlay() {
         if (isPlaying) {
           audio.pause();
+          audio.src = '';
+          audio.load();
+
           vinyl.classList.remove('spinning');
           tonearm.classList.remove('playing');
           playBtn.classList.remove('playing');
-          startStopLabel.textContent = 'Start';
           isPlaying = false;
+
+          platter.style.boxShadow = '0 10px 30px rgba(0,0,0,0.95), inset 0 0 20px rgba(0,0,0,0.9)';
+          platter.style.borderColor = '#8c90a2';
+
+          if (powerTower) {
+            powerTower.classList.remove('power-state-on');
+            powerTower.classList.add('power-state-off');
+          }
+          if (platterReflection) {
+            platterReflection.classList.add('dim-red');
+          }
         } else {
           await setupAudioContext();
-          
           try {
+            audio.src = STREAM_URL;
+            audio.load();
             await audio.play();
+
             vinyl.classList.add('spinning');
             tonearm.classList.add('playing');
             playBtn.classList.add('playing');
-            startStopLabel.textContent = 'Stop';
             isPlaying = true;
+
+            if (powerTower) {
+              powerTower.classList.remove('power-state-off');
+              powerTower.classList.add('power-state-on');
+            }
+            if (platterReflection) {
+              platterReflection.classList.remove('dim-red');
+            }
           } catch (e) {
-            console.error("Playback failed:", e);
+            console.error("Error al iniciar audio:", e);
           }
         }
       }
 
       function updateFaderPosition(vol) {
-        const minPos = 5;
-        const maxPos = 95;
-        const pos = minPos + (vol * (maxPos - minPos));
-        faderKnob.style.bottom = `${pos}%`;
-      }
+        const trackHeight = faderTrack.clientHeight;
+        const knobHeight = faderKnob.clientHeight || 22;
+        const maxTravel = trackHeight - knobHeight;
+        const posPx = vol * maxTravel;
 
-      function updateFaderTrackColor(vol) {
-        faderTrack.classList.remove('high-volume', 'medium-volume');
-        
-        if (vol >= 0.7) {
-          faderTrack.classList.add('high-volume');
-        } else if (vol >= 0.3) {
-          faderTrack.classList.add('medium-volume');
+        faderKnob.style.bottom = `${posPx}px`;
+
+        if (faderFill) {
+          if (vol === 0) {
+            faderFill.style.height = '0px';
+          } else {
+            faderFill.style.height = `${posPx + (knobHeight / 2)}px`;
+          }
         }
+
+        const currentScaleVal = Math.round(vol * 10 * 10) / 10;
+
+        if (vol === 0) {
+          scaleSteps.forEach(step => {
+            step.classList.remove('lit-blue');
+            step.classList.add('lit-red');
+          });
+          return;
+        }
+
+        scaleSteps.forEach(step => {
+          const stepVal = parseFloat(step.getAttribute('data-val'));
+
+          if (currentScaleVal < stepVal - 0.05) {
+            step.classList.remove('lit-blue');
+            step.classList.add('lit-red');
+          } else {
+            step.classList.remove('lit-red');
+            step.classList.add('lit-blue');
+          }
+        });
       }
 
-      function setVolumeFromPosition(clientY) {
-        const trackRect = faderTrack.getBoundingClientRect();
-        
-        let relativeY = clientY - trackRect.top;
-        let trackHeight = trackRect.height;
-        
-        let newVol = 1 - (relativeY / trackHeight);
-        newVol = Math.max(0, Math.min(1, newVol));
-        
-        volume = newVol;
+      function setVolume(newVol) {
+        volume = Math.max(0, Math.min(1, newVol));
         audio.volume = volume;
-        
-        updateFaderTrackColor(volume);
-        
-        faderKnob.style.transition = 'none';
         updateFaderPosition(volume);
       }
 
-      function handleMouseDown(e) {
-        isDragging = true;
-        faderKnob.style.transition = 'none';
-        e.preventDefault();
-        setVolumeFromPosition(e.clientY);
+      // Arrastre con compensación de escala
+      function setVolumeFromPosition(clientY) {
+        const trackRect = faderTrack.getBoundingClientRect();
+        const knobRect = faderKnob.getBoundingClientRect();
+        const knobHeight = knobRect.height;
+        const maxTravel = trackRect.height - knobHeight;
+        if (maxTravel <= 0) return;
+
+        let relativeY = clientY - trackRect.top - (knobHeight / 2);
+        let newVol = 1 - (relativeY / maxTravel);
+        setVolume(newVol);
       }
 
-      function handleMouseMove(e) {
+      function handleStart(e) {
+        isDragging = true;
+        faderKnob.style.transition = 'none';
+        if (faderFill) faderFill.style.transition = 'none';
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        setVolumeFromPosition(clientY);
+        e.preventDefault();
+      }
+
+      function handleMove(e) {
         if (isDragging) {
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          setVolumeFromPosition(clientY);
           e.preventDefault();
-          setVolumeFromPosition(e.clientY);
         }
       }
 
-      function handleMouseUp() {
+      function handleEnd() {
         if (isDragging) {
           isDragging = false;
           faderKnob.style.transition = 'bottom 0.08s ease-out';
+          if (faderFill) faderFill.style.transition = 'height 0.08s ease-out';
         }
       }
 
-      function handleTouchStart(e) {
-        isDragging = true;
-        faderKnob.style.transition = 'none';
-        e.preventDefault();
-        setVolumeFromPosition(e.touches[0].clientY);
-      }
+      faderContainer.addEventListener('mousedown', handleStart);
+      window.addEventListener('mousemove', handleMove);
+      window.addEventListener('mouseup', handleEnd);
 
-      function handleTouchMove(e) {
-        if (isDragging) {
-          e.preventDefault();
-          setVolumeFromPosition(e.touches[0].clientY);
-        }
-      }
+      faderContainer.addEventListener('touchstart', handleStart, { passive: false });
+      window.addEventListener('touchmove', handleMove, { passive: false });
+      window.addEventListener('touchend', handleEnd);
 
-      function handleTouchEnd() {
-        if (isDragging) {
-          isDragging = false;
-          faderKnob.style.transition = 'bottom 0.08s ease-out';
-        }
-      }
+      volUpBtn.addEventListener('click', () => {
+        let newVol = Math.min(1.0, Math.round((volume + 0.2) * 10) / 10);
+        setVolume(newVol);
 
-      faderKnob.addEventListener('mousedown', handleMouseDown);
-      faderTrack.addEventListener('mousedown', handleMouseDown);
-      faderContainer.addEventListener('mousedown', handleMouseDown);
+        volUpBtn.classList.add('fast-blink-blue');
+        clearTimeout(volUpTimeout);
+        volUpTimeout = setTimeout(() => {
+          volUpBtn.classList.remove('fast-blink-blue');
+        }, 2000);
+      });
 
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      volDownBtn.addEventListener('click', () => {
+        let newVol = Math.max(0.0, Math.round((volume - 0.2) * 10) / 10);
+        setVolume(newVol);
 
-      faderKnob.addEventListener('touchstart', handleTouchStart, { passive: false });
-      faderTrack.addEventListener('touchstart', handleTouchStart, { passive: false });
-      faderContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
+        volDownBtn.classList.add('fast-blink-red');
+        clearTimeout(volDownTimeout);
+        volDownTimeout = setTimeout(() => {
+          volDownBtn.classList.remove('fast-blink-red');
+        }, 2000);
+      });
 
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd);
-      document.addEventListener('touchcancel', handleTouchEnd);
+      rpm33Btn.addEventListener('click', () => {
+        rpm33Btn.classList.add('active');
+        rpm45Btn.classList.remove('active');
+        vinyl.style.animationDuration = '1.8s';
+      });
+
+      rpm45Btn.addEventListener('click', () => {
+        rpm45Btn.classList.add('active');
+        rpm33Btn.classList.remove('active');
+        vinyl.style.animationDuration = '1.33s';
+      });
 
       playBtn.addEventListener('click', togglePlay);
-
-      document.querySelectorAll('.footer-btn').forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-          const actions = ['Chat en vivo', 'Playlist actual', 'Sistema de donaciones'];
-          alert(`${actions[index]}\n\nPróximamente disponible en Castlebul Radio.`);
-        });
-      });
+      vinyl.addEventListener('click', togglePlay);
 
       function updateAlbumArtBackground() {
         if (!sonicArtFull || !albumArtVisible) return;
-        
         const img = sonicArtFull.querySelector('img');
-        
+
         if (img && img.src && img.src !== '' && img.src !== displayedArtUrl) {
           displayedArtUrl = img.src;
-          
           const preloadImg = new Image();
           preloadImg.onload = function() {
             albumArtVisible.style.backgroundImage = `url('${img.src}')`;
-            const fallback = albumArtVisible.querySelector('.fallback');
-            if (fallback) {
-              fallback.style.display = 'none';
-            }
-          };
-          preloadImg.onerror = function() {
-            const fallback = albumArtVisible.querySelector('.fallback');
-            if (fallback) {
-              fallback.style.display = 'flex';
-            }
           };
           preloadImg.src = img.src;
         }
@@ -1162,38 +2137,34 @@
           window.SonicAPI.on('track', function(data) {
             if (data && data.title && data.title !== displayedTitle) {
               displayedTitle = data.title;
-              sonicTitle.textContent = data.title;
+              updateMarqueeTitle(data.title);
             }
-            
             setTimeout(updateAlbumArtBackground, 300);
           });
-          
+
           window.SonicAPI.on('error', function() {
-            sonicTitle.textContent = 'Castlebul Radio';
             displayedTitle = 'Castlebul Radio';
+            updateMarqueeTitle('Castlebul Radio');
           });
         }
-        
         artUpdateInterval = setInterval(updateAlbumArtBackground, 3000);
       }
 
       initVisualizer();
-      updateFaderPosition(volume);
       audio.volume = volume;
-      updateFaderTrackColor(volume);
       setupSonicAPI();
+      updateMarqueeTitle('Castlebul Radio');
 
-      window.addEventListener('load', function() {
+      window.addEventListener('load', () => {
+        updateFaderPosition(volume);
         updateAlbumArtBackground();
+        fitTurntableToScreen();
         setTimeout(updateAlbumArtBackground, 1000);
       });
 
-      window.addEventListener('beforeunload', function() {
-        if (artUpdateInterval) {
-          clearInterval(artUpdateInterval);
-        }
+      window.addEventListener('beforeunload', () => {
+        if (artUpdateInterval) clearInterval(artUpdateInterval);
       });
-
     })();
   </script>
 </body>
