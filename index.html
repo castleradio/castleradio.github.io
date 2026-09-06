@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Castle</title>
   
+  <!-- Favicon desde la carpeta img -->
+  <link rel="icon" type="image/png" href="img/favicon.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico" />
+  <link rel="apple-touch-icon" href="img/favicon.png" />
+  
   <!-- SonicAPI Widget -->
   <script id='sonic_js' data-port='8422' src='https://mars.streamerr.co/cp/widgets.js?r=479'></script>
   
@@ -47,7 +52,7 @@
       color: #e5e9f0;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: space-between; /* Centra verticalmente el reproductor entre header y footer */
       align-items: center;
       position: relative;
       background: 
@@ -57,7 +62,7 @@
         linear-gradient(180deg, #05060d 0%, #080914 45%, #020306 100%);
     }
 
-    /* ===== OPTIMIZACIÓN GPU: SOL SYNTHWAVE POR GRADIENTES PUROS (SIN BLUR PESADO) ===== */
+    /* ===== SOL SYNTHWAVE RETRO OCHENTERO/NOVENTERO ===== */
     .synth-sun-backdrop {
       position: fixed;
       top: 38%;
@@ -79,7 +84,7 @@
       contain: strict;
     }
 
-    /* Resplandor del horizonte acelerado por GPU */
+    /* Resplandor del horizonte cyberpunk */
     .cyber-horizon-glow {
       position: fixed;
       bottom: 215px;
@@ -94,7 +99,7 @@
       transform: translateZ(0);
     }
 
-    /* Cuadrícula láser 3D en capa de composición de hardware */
+    /* Cuadrícula láser 3D en perspectiva Tron / Outrun */
     .cyber-grid-floor {
       position: fixed;
       bottom: 0;
@@ -113,7 +118,7 @@
       will-change: transform;
     }
 
-    /* CRT Scanlines sin repintado continuo */
+    /* Líneas de escaneo CRT analógicas */
     .crt-scanlines {
       position: fixed;
       inset: 0;
@@ -175,11 +180,11 @@
       }
     }
 
-    /* ===== ESCENARIO CENTRAL ===== */
+    /* ===== ESCENARIO CENTRAL VERTICAL ===== */
     main.center-stage {
       flex: 1;
       display: flex;
-      align-items: center;
+      align-items: center; /* Centrado vertical exacto */
       justify-content: center;
       width: 100%;
       max-width: 780px;
@@ -207,7 +212,7 @@
       transform-origin: top center;
     }
 
-    /* ===== CHASIS PIONEER PLX-1000 ACELERADO POR GPU ===== */
+    /* ===== CHASIS PIONEER PLX-1000 ===== */
     .turntable-wrapper {
       width: 730px;
       height: 560px;
@@ -454,12 +459,8 @@
     }
 
     @keyframes vfd-infinite-scroll {
-      0% {
-        transform: translate3d(0, 0, 0);
-      }
-      100% {
-        transform: translate3d(-50%, 0, 0);
-      }
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
     }
 
     .marquee-text {
@@ -482,7 +483,7 @@
       display: inline-block;
     }
 
-    /* ===== ECUALIZADOR 100% ACELERADO POR GPU (SIN REFLOWS) ===== */
+    /* ===== ECUALIZADOR DINÁMICO ===== */
     .visualizer {
       display: flex;
       align-items: flex-end;
@@ -504,7 +505,7 @@
         var(--neon-red) 100%
       );
       border-radius: 1px 1px 0 0;
-      height: 100%; /* Altura fija: escalamos exclusivamente con scaleY en GPU */
+      height: 100%;
       transform-origin: bottom center;
       transform: scaleY(0.1);
       box-shadow: 0 0 4px rgba(0, 243, 255, 0.35);
@@ -512,7 +513,6 @@
       will-change: transform;
     }
 
-    /* Un solo cambio de clase en el contenedor padre ahorra 28 mutaciones DOM */
     .visualizer.bass-hit .eq-bar {
       filter: brightness(1.35);
       box-shadow: 0 0 8px var(--neon-cyan);
@@ -618,7 +618,7 @@
       opacity: 1 !important;
     }
 
-    /* ===== VINILO OPTIMIZADO (CACHEADO EN TEXTURA GPU) ===== */
+    /* ===== VINILO ULTRA FLUIDO EN MÓVILES (ROTACIÓN PURA GPU A 60/120 FPS) ===== */
     .vinyl {
       width: 394px;
       height: 394px;
@@ -665,9 +665,10 @@
           #040406 2.2px,
           #08080b 3px
         );
+      /* Sombra circular simétrica: nunca se desbalancea ni fuerza repintado al rotar */
       box-shadow: 
-        0 8px 26px rgba(0, 0, 0, 0.96),
-        0 2px 8px rgba(0, 0, 0, 0.85),
+        0 0 20px rgba(0, 0, 0, 0.95),
+        0 0 6px rgba(0, 0, 0, 0.85),
         inset 0 0 0 1px rgba(255, 255, 255, 0.26),
         inset 0 0 4px 1.5px rgba(0, 0, 0, 0.95),
         inset 0 0 0 3.5px #0d0e13;
@@ -676,12 +677,21 @@
       align-items: center;
       justify-content: center;
       position: relative;
+
+      /* Aislamiento completo de renderizado para máxima suavidad */
+      transform-origin: 50% 50%;
       will-change: transform;
-      transform: translateZ(0);
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+      isolation: isolate;
+      contain: layout paint;
     }
 
+    /* Reflejo mariposa realista: sin máscara pesada para evitar caídas de FPS en móvil */
     .vinyl::before {
       content: '';
       position: absolute;
@@ -712,13 +722,12 @@
           rgba(255, 255, 255, 0.02) 325deg,
           transparent 350deg
         );
-      mask: radial-gradient(circle, transparent 84px, black 86px);
-      -webkit-mask: radial-gradient(circle, transparent 84px, black 86px);
       pointer-events: none;
       z-index: 2;
       transform: translateZ(0);
     }
 
+    /* Difracción óptica sutil */
     .vinyl::after {
       content: '';
       position: absolute;
@@ -752,8 +761,6 @@
           transparent 102px,
           transparent 197px
         );
-      mask: radial-gradient(circle, transparent 84px, black 86px);
-      -webkit-mask: radial-gradient(circle, transparent 84px, black 86px);
       pointer-events: none;
       z-index: 3;
       transform: translateZ(0);
@@ -761,11 +768,26 @@
 
     .vinyl.spinning {
       animation: spin-vinyl 1.8s linear infinite;
+      -webkit-animation: spin-vinyl 1.8s linear infinite;
     }
 
+    /* Animación delegada al RenderCompositor del hardware */
     @keyframes spin-vinyl {
-      from { transform: translate3d(0, 0, 0) rotate(0deg); }
-      to { transform: translate3d(0, 0, 0) rotate(360deg); }
+      0% {
+        transform: translate3d(0, 0, 0) rotateZ(0deg);
+      }
+      100% {
+        transform: translate3d(0, 0, 0) rotateZ(360deg);
+      }
+    }
+
+    @-webkit-keyframes spin-vinyl {
+      0% {
+        -webkit-transform: translate3d(0, 0, 0) rotateZ(0deg);
+      }
+      100% {
+        -webkit-transform: translate3d(0, 0, 0) rotateZ(360deg);
+      }
     }
 
     .album-art-visible {
@@ -1482,7 +1504,7 @@
     <h1 class="castle-title">CASTLE</h1>
   </header>
 
-  <!-- CONTENEDOR CENTRAL -->
+  <!-- CONTENEDOR CENTRAL: CENTRA VERTICALMENTE EL REPRODUCTOR -->
   <main class="center-stage">
     <div class="player-outer-bounds" id="player-bounds">
       <div class="turntable-viewport" id="turntable-viewport">
@@ -1672,6 +1694,7 @@
     </div>
   </main>
 
+  <!-- PIE DE PÁGINA -->
   <footer class="castle-footer">
     <div class="footer-neon-glow-line"></div>
     <p class="footer-text">Copyright 2026 | Castle</p>
@@ -1732,7 +1755,6 @@
       let volDownTimeout = null;
       let currentMarqueeText = '';
 
-      // Cache de barras DOM para evitar búsquedas repetitivas a 60fps
       let cachedBars = [];
 
       const RHYTHM_COLORS = [
@@ -1745,11 +1767,10 @@
       let lastBassHit = 0;
       const bassCooldown = 220;
 
-      // Variables de control de renderizado de luces
       let lastLightUpdate = 0;
       let wasBassHit = false;
 
-      // ✅ CÁLCULO DE ESCALA OPTIMIZADO (EVITA RE-LAYOUT EN SCROLL MÓVIL)
+      // CÁLCULO DE ESCALA OPTIMIZADO
       let lastWindowWidth = 0;
       let lastWindowHeight = 0;
 
@@ -1759,7 +1780,6 @@
         const wWidth = window.innerWidth;
         const wHeight = window.innerHeight;
         
-        // Si el tamaño no ha cambiado realmente (ej. por scroll en móvil), no re-calcular
         if (wWidth === lastWindowWidth && Math.abs(wHeight - lastWindowHeight) < 60) return;
         lastWindowWidth = wWidth;
         lastWindowHeight = wHeight;
@@ -1857,7 +1877,6 @@
         titleObserver.observe(sonicTitle, { childList: true, characterData: true, subtree: true });
       }
 
-      // Inicializar y cachear barras para evitar búsquedas periódicas en el DOM
       function initVisualizer() {
         visualizer.innerHTML = '';
         cachedBars = [];
@@ -1893,14 +1912,12 @@
         }
       }
 
-      // ✅ ILUMINACIÓN OPTIMIZADA: ELIMINA RE-PARSEO DE STRINGS INNECESARIOS
       function updatePlatterLight(bassLevel, isBassHit, now) {
         if (isBassHit && (now - lastBassHit) > bassCooldown) {
           lastBassHit = now;
           rhythmColorIndex = (rhythmColorIndex + 1) % RHYTHM_COLORS.length;
         }
 
-        // Limita la mutación de cadenas de sombra a ~30fps para liberar la GPU
         if (now - lastLightUpdate < 32 && !isBassHit) return;
         lastLightUpdate = now;
 
@@ -1922,7 +1939,6 @@
         }
       }
 
-      // ✅ BUCLE DEL ECUALIZADOR: 100% PROCESADO POR CHIP GRÁFICO (scaleY SIN REFLOWS)
       function renderVisualizer(timestamp) {
         if (!isPlaying || !analyser || !dataArray) return;
 
@@ -1936,7 +1952,6 @@
 
         updatePlatterLight(bassLevel, isBassHit, timestamp || performance.now());
 
-        // Control de clase centralizado en lugar de mutar 28 elementos por separado
         if (wasBassHit !== isBassHit) {
           visualizer.classList.toggle('bass-hit', isBassHit);
           wasBassHit = isBassHit;
@@ -1957,14 +1972,12 @@
           ratio = Math.pow(ratio, 1.25);
 
           const scaleRatio = Math.max(0.1, Math.min(0.92, ratio * 0.92));
-          // scaleY se procesa en el compositor de la GPU sin recalcular la geometría de la página
           cachedBars[i].style.transform = `scaleY(${scaleRatio})`;
         }
 
         animationId = requestAnimationFrame(renderVisualizer);
       }
 
-      // ✅ DETENCIÓN LIMPIA: CANCELA EL BUCLE DE GPU Y PREVIENE FUGAS DE MEMORIA
       async function togglePlay() {
         if (isPlaying) {
           isPlaying = false;
@@ -1985,7 +1998,6 @@
           platter.style.boxShadow = '0 10px 30px rgba(0,0,0,0.95), inset 0 0 20px rgba(0,0,0,0.9)';
           platter.style.borderColor = '#8c90a2';
 
-          // Restablecer barras en GPU
           for (let i = 0; i < cachedBars.length; i++) {
             cachedBars[i].style.transform = 'scaleY(0.1)';
           }
@@ -2017,7 +2029,6 @@
               platterReflection.classList.remove('dim-red');
             }
 
-            // Iniciar bucle gráfico únicamente cuando se reproduce
             if (!animationId) {
               animationId = requestAnimationFrame(renderVisualizer);
             }
@@ -2027,7 +2038,6 @@
         }
       }
 
-      // ✅ SUSPENSIÓN AUTOMÁTICA AL BLOQUEAR LA PANTALLA O CAMBIAR DE PESTAÑA (AHORRA BATERÍA)
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
           if (animationId) {
@@ -2119,7 +2129,7 @@
       }
 
       faderContainer.addEventListener('mousedown', handleStart);
-      window.addEventListener('mousemove', handleMove, { passive: false });
+      window.addEventListener('mousemove', handleMove);
       window.addEventListener('mouseup', handleEnd);
 
       faderContainer.addEventListener('touchstart', handleStart, { passive: false });
@@ -2152,18 +2162,19 @@
         rpm33Btn.classList.add('active');
         rpm45Btn.classList.remove('active');
         vinyl.style.animationDuration = '1.8s';
+        vinyl.style.webkitAnimationDuration = '1.8s';
       });
 
       rpm45Btn.addEventListener('click', () => {
         rpm45Btn.classList.add('active');
         rpm33Btn.classList.remove('active');
         vinyl.style.animationDuration = '1.33s';
+        vinyl.style.webkitAnimationDuration = '1.33s';
       });
 
       playBtn.addEventListener('click', togglePlay);
       vinyl.addEventListener('click', togglePlay);
 
-      // ✅ PRECARGA DE IMÁGENES CON LIBERACIÓN DE MEMORIA
       function updateAlbumArtBackground() {
         if (!sonicArtFull || !albumArtVisible) return;
         const img = sonicArtFull.querySelector('img');
@@ -2213,7 +2224,6 @@
         fitTurntableToScreen();
       });
 
-      // Limpieza total de procesos al salir de la página
       window.addEventListener('pagehide', () => {
         if (animationId) cancelAnimationFrame(animationId);
         if (artUpdateInterval) clearInterval(artUpdateInterval);
