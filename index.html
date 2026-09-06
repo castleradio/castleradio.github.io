@@ -52,7 +52,7 @@
       color: #e5e9f0;
       display: flex;
       flex-direction: column;
-      justify-content: space-between; /* Centrado vertical perfecto */
+      justify-content: space-between;
       align-items: center;
       position: relative;
       background: 
@@ -62,7 +62,7 @@
         linear-gradient(180deg, #05060d 0%, #080914 45%, #020306 100%);
     }
 
-    /* Sol Synthwave 80s/90s optimizado */
+    /* Sol Synthwave 80s/90s */
     .synth-sun-backdrop {
       position: fixed;
       top: 38%;
@@ -532,7 +532,7 @@
       font-weight: 800;
     }
 
-    /* ===== CUENCA DEL PLATO Y AURA DE ILUMINACIÓN INDEPENDIENTE ===== */
+    /* ===== CUENCA DEL PLATO ===== */
     .platter-bay {
       position: absolute;
       top: 113px;
@@ -552,20 +552,62 @@
       z-index: 5;
     }
 
-    /* Capa de resplandor separada: nunca interrumpe el hilo de rotación del disco */
-    .platter-glow-aura {
+    /* ===== SISTEMA DE LUCES PRE-RENDERIZADAS EN GPU (100% FLUIDO EN MÓVILES) ===== */
+    .platter-glow-system {
       position: absolute;
       width: 416px;
       height: 416px;
       border-radius: 50%;
       pointer-events: none;
       z-index: 4;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.95);
-      transition: box-shadow 0.12s ease;
-      will-change: box-shadow;
       transform: translateZ(0);
     }
 
+    .glow-ring {
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      will-change: opacity;
+      transition: opacity 0.08s linear;
+      transform: translateZ(0);
+    }
+
+    /* Sombras pre-calculadas por hardware: la CPU nunca recalcula Gaussian Blur */
+    .glow-ring.ring-blue {
+      box-shadow: 
+        0 0 25px rgba(0, 168, 255, 0.8),
+        0 0 50px rgba(0, 243, 255, 0.4),
+        inset 0 0 15px rgba(0, 168, 255, 0.55);
+      border: 2.5px solid rgba(0, 243, 255, 0.85);
+    }
+
+    .glow-ring.ring-red {
+      box-shadow: 
+        0 0 25px rgba(255, 42, 75, 0.8),
+        0 0 50px rgba(255, 71, 87, 0.4),
+        inset 0 0 15px rgba(255, 42, 75, 0.55);
+      border: 2.5px solid rgba(255, 71, 87, 0.85);
+    }
+
+    .glow-ring.ring-orange {
+      box-shadow: 
+        0 0 25px rgba(255, 153, 0, 0.8),
+        0 0 50px rgba(255, 170, 0, 0.4),
+        inset 0 0 15px rgba(255, 153, 0, 0.55);
+      border: 2.5px solid rgba(255, 170, 0, 0.85);
+    }
+
+    .glow-ring.ring-silver {
+      box-shadow: 
+        0 0 25px rgba(238, 241, 246, 0.8),
+        0 0 50px rgba(255, 255, 255, 0.4),
+        inset 0 0 15px rgba(238, 241, 246, 0.55);
+      border: 2.5px solid rgba(255, 255, 255, 0.85);
+    }
+
+    /* El plato físico se mantiene 100% estático para no bloquear al vinilo */
     .platter {
       width: 416px;
       height: 416px;
@@ -578,8 +620,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
-      transition: border-color 0.15s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.95), inset 0 0 20px rgba(0,0,0,0.9);
       transform: translateZ(0);
       z-index: 5;
     }
@@ -596,6 +637,7 @@
       pointer-events: none;
     }
 
+    /* Reflejo estroboscópico sin máscara de CPU (cubierto limpiamente por el vinilo) */
     .platter-strobe-reflection {
       position: absolute;
       inset: 0;
@@ -609,8 +651,6 @@
         rgba(255, 42, 75, 0.45) 42deg,
         transparent 55deg
       );
-      mask: radial-gradient(circle, transparent 90%, black 91%);
-      -webkit-mask: radial-gradient(circle, transparent 90%, black 91%);
       pointer-events: none;
       transition: opacity 0.08s ease;
       will-change: opacity;
@@ -629,7 +669,7 @@
       opacity: 1 !important;
     }
 
-    /* ===== VINILO: ROTACIÓN BITMAP PURA EN GPU (0% CPU / 120 FPS FLUIDOS) ===== */
+    /* ===== VINILO: ROTACIÓN BITMAP PURA EN GPU (120 FPS FLUIDOS) ===== */
     .vinyl {
       width: 394px;
       height: 394px;
@@ -987,7 +1027,7 @@
       100% { opacity: 1; transform: scale(1.08); }
     }
 
-    /* ===== VOLUMEN CALIBRADO (RESPUESTA INSTANTÁNEA) ===== */
+    /* ===== VOLUMEN CALIBRADO ===== */
     .pitch-fader-assembly {
       position: absolute;
       top: 105px;
@@ -1352,7 +1392,6 @@
 </head>
 <body>
 
-  <!-- Elementos de fondo optimizados -->
   <div class="crt-scanlines"></div>
   <div class="synth-sun-backdrop"></div>
   <div class="cyber-horizon-glow"></div>
@@ -1413,8 +1452,13 @@
           </div>
 
           <div class="platter-bay">
-            <!-- Capa de resplandor aislada: nunca congela el hilo de la rotación -->
-            <div class="platter-glow-aura" id="platter-glow-aura"></div>
+            <!-- 4 ANILLOS DE LUZ EN GPU (CERO CONSUMO DE CPU) -->
+            <div class="platter-glow-system" id="platter-glow-system">
+              <div class="glow-ring ring-blue"></div>
+              <div class="glow-ring ring-red"></div>
+              <div class="glow-ring ring-orange"></div>
+              <div class="glow-ring ring-silver"></div>
+            </div>
             
             <div class="platter" id="platter">
               <div class="platter-strobe-reflection dim-red" id="platter-strobe-reflection"></div>
@@ -1571,7 +1615,7 @@
 
   <script>
     (function() {
-      // ===== GENERADOR DE TEXTURA DE VINILO ULTRA REALISTA (100% HARDWARE GPU) =====
+      // ===== GENERADOR DE TEXTURA DE VINILO EN GPU (BITMAP ESTÁTICO) =====
       function generateVinylTexture() {
         const size = 394;
         const c = document.createElement('canvas');
@@ -1581,7 +1625,7 @@
         const cx = size / 2;
         const cy = size / 2;
 
-        // 1. Cuerpo base de vinilo negro carbón
+        // 1. Cuerpo base de vinilo negro
         ctx.fillStyle = '#06070a';
         ctx.beginPath();
         ctx.arc(cx, cy, 196, 0, Math.PI * 2);
@@ -1631,7 +1675,7 @@
           ctx.strokeStyle = 'rgba(10, 12, 16, 0.95)';
         });
 
-        // 6. Zona lisa de salida (Dead Wax / Run-out groove)
+        // 6. Zona lisa de salida (Dead Wax)
         const deadWaxGrad = ctx.createRadialGradient(cx, cy, 85, cx, cy, 108);
         deadWaxGrad.addColorStop(0, '#06070a');
         deadWaxGrad.addColorStop(0.3, '#10121a');
@@ -1642,7 +1686,7 @@
         ctx.arc(cx, cy, 108, 0, Math.PI * 2);
         ctx.fill();
 
-        // Espirales grabadas en el centro
+        // Espirales grabadas
         ctx.lineWidth = 0.7;
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.beginPath();
@@ -1719,7 +1763,6 @@
       const albumArtVisible = document.getElementById('album-art-visible');
       const sonicArtFull = document.getElementById('sonic_art_full');
       const platter = document.getElementById('platter');
-      const platterGlowAura = document.getElementById('platter-glow-aura');
       const scaleSteps = document.querySelectorAll('.scale-step');
       const volUpBtn = document.getElementById('vol-up-btn');
       const volDownBtn = document.getElementById('vol-down-btn');
@@ -1736,6 +1779,14 @@
       const turntableViewport = document.getElementById('turntable-viewport');
       const castleHeader = document.querySelector('.castle-header');
       const castleFooter = document.querySelector('.castle-footer');
+
+      // Cache de anillos de resplandor para opacidad pura por GPU
+      const glowRings = [
+        document.querySelector('.glow-ring.ring-blue'),
+        document.querySelector('.glow-ring.ring-red'),
+        document.querySelector('.glow-ring.ring-orange'),
+        document.querySelector('.glow-ring.ring-silver')
+      ];
 
       const STREAM_URL = 'https://mars.streamerr.co/8422/stream';
 
@@ -1755,13 +1806,6 @@
       let currentMarqueeText = '';
 
       let cachedBars = [];
-
-      const RHYTHM_COLORS = [
-        { glow: 'rgba(0, 168, 255, ',   border: 'rgba(0, 243, 255, ' },
-        { glow: 'rgba(255, 42, 75, ',    border: 'rgba(255, 71, 87, ' },
-        { glow: 'rgba(255, 153, 0, ',    border: 'rgba(255, 170, 0, ' },
-        { glow: 'rgba(238, 241, 246, ',  border: 'rgba(255, 255, 255, ' }
-      ];
       let rhythmColorIndex = 0;
       let lastBassHit = 0;
       const bassCooldown = 220;
@@ -1769,14 +1813,14 @@
       let lastLightUpdate = 0;
       let wasBassHit = false;
 
-      // Variables de arrastre sin Layout Thrashing
+      // Variables estáticas del Fader
       let dragTrackTop = 0;
       let dragMaxTravel = 268;
       let dragKnobHalf = 11;
       let faderTravelPx = 268;
       let lastRenderedStep = -1;
 
-      // Aplicar textura optimizada a la memoria de la GPU
+      // Inyectar textura precálculada en VRAM
       if (vinyl) {
         try {
           const textureUrl = generateVinylTexture();
@@ -1932,35 +1976,30 @@
         }
       }
 
-      // ✅ ACTUALIZACIÓN DE LUZ EN CAPA INDEPENDIENTE (NUNCA INVALIDA LA ROTACIÓN)
+      // ===== ILUMINACIÓN RÍTMICA OPTIMIZADA: MODULACIÓN DE OPACIDAD 100% GPU =====
       function updatePlatterLight(bassLevel, isBassHit, now) {
         if (isBassHit && (now - lastBassHit) > bassCooldown) {
           lastBassHit = now;
-          rhythmColorIndex = (rhythmColorIndex + 1) % RHYTHM_COLORS.length;
-          if (platter) {
-            platter.style.borderColor = `${RHYTHM_COLORS[rhythmColorIndex].border}0.65)`;
+          // Ocultar anillo anterior
+          if (glowRings[rhythmColorIndex]) {
+            glowRings[rhythmColorIndex].style.opacity = '0';
           }
+          rhythmColorIndex = (rhythmColorIndex + 1) % glowRings.length;
         }
 
         if (now - lastLightUpdate < 32 && !isBassHit) return;
         lastLightUpdate = now;
 
-        const activeCol = RHYTHM_COLORS[rhythmColorIndex];
-        const intensity = Math.min(0.72, 0.16 + (bassLevel / 255) * 0.48);
-        const glow = 14 + (bassLevel / 255) * 26;
-        const innerGlow = 6 + (bassLevel / 255) * 16;
+        // Modulación suave de opacidad (0.15 a 1.0) sin recalcular Gaussian Blur
+        const intensity = Math.min(1.0, 0.18 + (bassLevel / 255) * 0.82);
 
-        if (platterGlowAura) {
-          platterGlowAura.style.boxShadow = `
-            0 10px 30px rgba(0,0,0,0.95),
-            inset 0 0 ${innerGlow}px ${activeCol.glow}${intensity * 0.65}),
-            0 0 ${glow}px ${activeCol.glow}${intensity}),
-            0 0 ${glow * 1.5}px ${activeCol.glow}${intensity * 0.35})
-          `;
+        const activeRing = glowRings[rhythmColorIndex];
+        if (activeRing) {
+          activeRing.style.opacity = intensity;
         }
 
         if (platterReflection && !platterReflection.classList.contains('dim-red')) {
-          platterReflection.style.opacity = Math.min(1, intensity * 1.3);
+          platterReflection.style.opacity = Math.min(1, intensity * 1.2);
         }
       }
 
@@ -2020,12 +2059,10 @@
           tonearm.classList.remove('playing');
           playBtn.classList.remove('playing');
 
-          if (platterGlowAura) {
-            platterGlowAura.style.boxShadow = '0 10px 30px rgba(0,0,0,0.95)';
-          }
-          if (platter) {
-            platter.style.borderColor = '#8c90a2';
-          }
+          // Apagar todos los anillos de luz suavemente
+          glowRings.forEach(ring => {
+            if (ring) ring.style.opacity = '0';
+          });
 
           for (let i = 0; i < cachedBars.length; i++) {
             cachedBars[i].style.transform = 'scaleY(0.1)';
@@ -2080,7 +2117,7 @@
         }
       });
 
-      // FADER ULTRA RÁPIDO
+      // FADER RÁPIDO
       function updateFaderPosition(vol) {
         const posPx = vol * faderTravelPx;
         faderKnob.style.bottom = `${posPx}px`;
