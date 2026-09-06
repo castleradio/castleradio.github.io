@@ -52,7 +52,7 @@
       color: #e5e9f0;
       display: flex;
       flex-direction: column;
-      justify-content: space-between; /* Centra verticalmente el reproductor entre header y footer */
+      justify-content: space-between;
       align-items: center;
       position: relative;
       background: 
@@ -62,7 +62,7 @@
         linear-gradient(180deg, #05060d 0%, #080914 45%, #020306 100%);
     }
 
-    /* ===== SOL SYNTHWAVE RETRO OCHENTERO/NOVENTERO ===== */
+    /* ===== FONDO 80s/90s LIGERO Y OPTIMIZADO PARA GPU ===== */
     .synth-sun-backdrop {
       position: fixed;
       top: 38%;
@@ -84,7 +84,6 @@
       contain: strict;
     }
 
-    /* Resplandor del horizonte cyberpunk */
     .cyber-horizon-glow {
       position: fixed;
       bottom: 215px;
@@ -99,7 +98,6 @@
       transform: translateZ(0);
     }
 
-    /* Cuadrícula láser 3D en perspectiva Tron / Outrun */
     .cyber-grid-floor {
       position: fixed;
       bottom: 0;
@@ -118,18 +116,19 @@
       will-change: transform;
     }
 
-    /* Líneas de escaneo CRT analógicas */
+    /* Patrón de scanlines en mosaico de bajo costo para GPU */
     .crt-scanlines {
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0px, rgba(0, 0, 0, 0.16) 1px, transparent 1px, transparent 3px);
+      background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.18) 50%, transparent 50%);
+      background-size: 100% 4px;
       z-index: 999;
       opacity: 0.35;
       transform: translateZ(0);
     }
 
-    /* ===== TÍTULO "CASTLE" ===== */
+    /* ===== TÍTULO "CASTLE" (PULSACIÓN POR GPU SIN REPINTADO DE CPU) ===== */
     header.castle-header {
       width: 100%;
       padding: 26px 15px 10px;
@@ -140,6 +139,11 @@
       z-index: 20;
       flex-shrink: 0;
       transform: translateZ(0);
+    }
+
+    .castle-title-box {
+      position: relative;
+      display: inline-block;
     }
 
     .castle-title {
@@ -157,34 +161,41 @@
         0 0 110px var(--neon-purple);
       line-height: 1;
       padding-left: 14px;
-      will-change: text-shadow;
-      animation: neon-title-glow 3s infinite alternate ease-in-out;
     }
 
-    @keyframes neon-title-glow {
-      0% {
-        text-shadow: 
-          0 0 7px rgba(255, 255, 255, 0.9),
-          0 0 15px var(--neon-cyan),
-          0 0 35px var(--neon-cyan),
-          0 0 70px var(--neon-pink),
-          0 0 100px var(--neon-purple);
-      }
-      100% {
-        text-shadow: 
-          0 0 10px rgba(255, 255, 255, 1),
-          0 0 25px var(--neon-cyan),
-          0 0 50px var(--neon-pink),
-          0 0 95px var(--neon-pink),
-          0 0 135px var(--neon-purple);
-      }
+    /* Capa de neón flotante que pulsa en GPU con 'opacity' */
+    .castle-title-glow-layer {
+      position: absolute;
+      inset: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 8vw, 4.8rem);
+      font-weight: 900;
+      letter-spacing: 14px;
+      text-transform: uppercase;
+      color: transparent;
+      text-shadow: 
+        0 0 10px rgba(255, 255, 255, 1),
+        0 0 25px var(--neon-cyan),
+        0 0 50px var(--neon-pink),
+        0 0 95px var(--neon-pink),
+        0 0 135px var(--neon-purple);
+      line-height: 1;
+      padding-left: 14px;
+      pointer-events: none;
+      animation: neon-gpu-pulse 3s infinite alternate ease-in-out;
+      will-change: opacity;
     }
 
-    /* ===== ESCENARIO CENTRAL VERTICAL ===== */
+    @keyframes neon-gpu-pulse {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    /* ===== CONTENEDOR CENTRAL VERTICAL ===== */
     main.center-stage {
       flex: 1;
       display: flex;
-      align-items: center; /* Centrado vertical exacto */
+      align-items: center;
       justify-content: center;
       width: 100%;
       max-width: 780px;
@@ -665,7 +676,6 @@
           #040406 2.2px,
           #08080b 3px
         );
-      /* Sombra circular simétrica: nunca se desbalancea ni fuerza repintado al rotar */
       box-shadow: 
         0 0 20px rgba(0, 0, 0, 0.95),
         0 0 6px rgba(0, 0, 0, 0.85),
@@ -677,8 +687,6 @@
       align-items: center;
       justify-content: center;
       position: relative;
-
-      /* Aislamiento completo de renderizado para máxima suavidad */
       transform-origin: 50% 50%;
       will-change: transform;
       transform: translate3d(0, 0, 0);
@@ -691,7 +699,6 @@
       contain: layout paint;
     }
 
-    /* Reflejo mariposa realista: sin máscara pesada para evitar caídas de FPS en móvil */
     .vinyl::before {
       content: '';
       position: absolute;
@@ -727,7 +734,6 @@
       transform: translateZ(0);
     }
 
-    /* Difracción óptica sutil */
     .vinyl::after {
       content: '';
       position: absolute;
@@ -771,23 +777,14 @@
       -webkit-animation: spin-vinyl 1.8s linear infinite;
     }
 
-    /* Animación delegada al RenderCompositor del hardware */
     @keyframes spin-vinyl {
-      0% {
-        transform: translate3d(0, 0, 0) rotateZ(0deg);
-      }
-      100% {
-        transform: translate3d(0, 0, 0) rotateZ(360deg);
-      }
+      0% { transform: translate3d(0, 0, 0) rotateZ(0deg); }
+      100% { transform: translate3d(0, 0, 0) rotateZ(360deg); }
     }
 
     @-webkit-keyframes spin-vinyl {
-      0% {
-        -webkit-transform: translate3d(0, 0, 0) rotateZ(0deg);
-      }
-      100% {
-        -webkit-transform: translate3d(0, 0, 0) rotateZ(360deg);
-      }
+      0% { -webkit-transform: translate3d(0, 0, 0) rotateZ(0deg); }
+      100% { -webkit-transform: translate3d(0, 0, 0) rotateZ(360deg); }
     }
 
     .album-art-visible {
@@ -1044,7 +1041,7 @@
       overflow: visible;
     }
 
-    /* ===== PUNTO ESTROBOSCÓPICO NARANJA ===== */
+    /* ===== PUNTO ESTROBOSCÓPICO NARANJA (OPTIMIZADO CON GPU OPACITY) ===== */
     .target-lamp-unit {
       position: absolute;
       top: 325px;
@@ -1096,22 +1093,16 @@
         0 0 8px var(--neon-orange),
         0 0 16px rgba(255, 119, 0, 0.8),
         inset 0 0 2px #fff;
-      animation: pulse-orange-led 2s infinite ease-in-out;
-      will-change: filter, box-shadow;
+      animation: pulse-orange-opacity 2s infinite alternate ease-in-out;
+      will-change: opacity, transform;
     }
 
-    @keyframes pulse-orange-led {
-      0%, 100% {
-        box-shadow: 0 0 8px var(--neon-orange), 0 0 14px rgba(255, 119, 0, 0.7);
-        filter: brightness(1);
-      }
-      50% {
-        box-shadow: 0 0 12px #ff9426, 0 0 22px rgba(255, 148, 38, 0.95);
-        filter: brightness(1.25);
-      }
+    @keyframes pulse-orange-opacity {
+      0% { opacity: 0.6; transform: scale(0.92); }
+      100% { opacity: 1; transform: scale(1.08); }
     }
 
-    /* ===== VOLUMEN CALIBRADO ===== */
+    /* ===== VOLUMEN CALIBRADO (RESPUESTA TÁCTIL INSTANTÁNEA) ===== */
     .pitch-fader-assembly {
       position: absolute;
       top: 105px;
@@ -1190,6 +1181,7 @@
       background: #050608;
       border-radius: 3px;
       box-shadow: inset 0 0 6px #000, 0 1px 1px rgba(255,255,255,0.08);
+      pointer-events: none;
     }
 
     .fader-fill {
@@ -1201,7 +1193,6 @@
       background: linear-gradient(to top, var(--pioneer-blue) 0%, var(--neon-cyan) 100%);
       box-shadow: 0 0 8px var(--pioneer-blue);
       pointer-events: none;
-      transition: height 0.08s ease-out;
     }
 
     .fader-knob {
@@ -1216,7 +1207,6 @@
       cursor: grab;
       box-shadow: 0 5px 12px rgba(0,0,0,0.85), inset 0 1px 2px rgba(255,255,255,0.9);
       border: 1px solid #282a33;
-      transition: bottom 0.08s ease-out;
       touch-action: none;
       z-index: 5;
     }
@@ -1280,41 +1270,38 @@
       width: 18px;
       height: 18px;
       pointer-events: none;
-      transition: filter 0.2s, opacity 0.2s;
     }
 
     .vol-up-btn .vol-arrow-svg {
       color: var(--pioneer-blue);
-      animation: pulse-arrow-blue 1.6s infinite ease-in-out;
-    }
-    @keyframes pulse-arrow-blue {
-      0%, 100% { opacity: 0.35; filter: drop-shadow(0 0 1px rgba(0, 168, 255, 0.4)); }
-      50% { opacity: 1; filter: drop-shadow(0 0 8px var(--pioneer-blue)) drop-shadow(0 0 14px var(--neon-cyan)); }
+      filter: drop-shadow(0 0 6px var(--pioneer-blue));
+      animation: pulse-arrow-opacity 1.6s infinite alternate ease-in-out;
+      will-change: opacity;
     }
 
     .vol-down-btn .vol-arrow-svg {
       color: var(--neon-red);
-      animation: pulse-arrow-red 1.6s infinite ease-in-out;
+      filter: drop-shadow(0 0 6px var(--neon-red));
+      animation: pulse-arrow-opacity 1.6s infinite alternate ease-in-out;
+      will-change: opacity;
     }
-    @keyframes pulse-arrow-red {
-      0%, 100% { opacity: 0.35; filter: drop-shadow(0 0 1px rgba(255, 42, 75, 0.4)); }
-      50% { opacity: 1; filter: drop-shadow(0 0 8px var(--neon-red)) drop-shadow(0 0 14px #ff0055); }
+
+    @keyframes pulse-arrow-opacity {
+      0% { opacity: 0.35; }
+      100% { opacity: 1; }
     }
 
     .vol-up-btn.fast-blink-blue .vol-arrow-svg {
-      animation: rapid-arrow-blue 0.16s infinite alternate !important;
-    }
-    @keyframes rapid-arrow-blue {
-      0% { opacity: 0.2; filter: drop-shadow(0 0 2px var(--pioneer-blue)); }
-      100% { opacity: 1; filter: drop-shadow(0 0 14px #00f3ff) drop-shadow(0 0 20px #fff); }
+      animation: rapid-arrow-flash 0.16s infinite alternate !important;
     }
 
     .vol-down-btn.fast-blink-red .vol-arrow-svg {
-      animation: rapid-arrow-red 0.16s infinite alternate !important;
+      animation: rapid-arrow-flash 0.16s infinite alternate !important;
     }
-    @keyframes rapid-arrow-red {
-      0% { opacity: 0.2; filter: drop-shadow(0 0 2px var(--neon-red)); }
-      100% { opacity: 1; filter: drop-shadow(0 0 14px #ff0055) drop-shadow(0 0 20px #fff); }
+
+    @keyframes rapid-arrow-flash {
+      0% { opacity: 0.2; }
+      100% { opacity: 1; }
     }
 
     /* ===== BOTÓN PLAY / STOP ===== */
@@ -1352,7 +1339,7 @@
         inset 0 -2px 4px rgba(0,0,0,0.6);
       transition: transform 0.15s ease, box-shadow 0.2s ease;
       z-index: 20;
-      will-change: transform, box-shadow;
+      will-change: transform;
     }
 
     .start-stop-round-btn:active {
@@ -1375,51 +1362,38 @@
 
     .start-stop-round-btn:not(.playing) .play-word {
       color: #00f3ff;
-      animation: blink-blue-text 1.2s infinite ease-in-out;
+      text-shadow: 0 0 12px #00f3ff, 0 0 20px #00a8ff;
+      animation: blink-text-gpu 1.2s infinite alternate ease-in-out;
+      will-change: opacity;
     }
 
     .start-stop-round-btn:not(.playing) .stop-word {
       color: #ff2a4b;
       text-shadow: 0 0 10px #ff2a4b;
       opacity: 1;
-      animation: none;
-    }
-
-    @keyframes blink-blue-text {
-      0%, 100% { opacity: 0.4; text-shadow: none; }
-      50% { opacity: 1; text-shadow: 0 0 12px #00f3ff, 0 0 20px #00a8ff; }
     }
 
     .start-stop-round-btn.playing .play-word {
       color: #00f3ff;
       text-shadow: 0 0 8px #00f3ff;
       opacity: 1;
-      animation: none;
     }
 
     .start-stop-round-btn.playing .stop-word {
       color: #ff1744;
-      animation: blink-red-text 1.2s infinite ease-in-out;
+      text-shadow: 0 0 12px #ff1744, 0 0 20px #ff0055;
+      animation: blink-text-gpu 1.2s infinite alternate ease-in-out;
+      will-change: opacity;
     }
 
-    @keyframes blink-red-text {
-      0%, 100% { opacity: 0.35; text-shadow: none; }
-      50% { opacity: 1; text-shadow: 0 0 12px #ff1744, 0 0 20px #ff0055; }
-    }
-
-    .start-stop-round-btn:not(.playing) {
-      animation: pulse-btn-halo 1.5s infinite alternate ease-in-out;
-    }
-
-    @keyframes pulse-btn-halo {
-      0% { box-shadow: 0 0 0 2.5px rgba(0, 168, 255, 0.3), 0 8px 20px rgba(0,0,0,0.9); }
-      100% { box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.95), 0 0 20px rgba(0, 168, 255, 0.75), 0 8px 20px rgba(0,0,0,0.9); }
+    @keyframes blink-text-gpu {
+      0% { opacity: 0.35; }
+      100% { opacity: 1; }
     }
 
     .start-stop-round-btn.playing {
       border-color: var(--pioneer-blue);
       box-shadow: 0 0 0 4px var(--pioneer-blue), 0 0 24px rgba(0, 168, 255, 0.85), 0 8px 20px rgba(0,0,0,0.9);
-      animation: none;
     }
 
     /* BOTONES 33 Y 45 RPM */
@@ -1501,7 +1475,10 @@
 
   <!-- TÍTULO SUPERIOR: CASTLE -->
   <header class="castle-header">
-    <h1 class="castle-title">CASTLE</h1>
+    <div class="castle-title-box">
+      <h1 class="castle-title">CASTLE</h1>
+      <div class="castle-title-glow-layer">CASTLE</div>
+    </div>
   </header>
 
   <!-- CONTENEDOR CENTRAL: CENTRA VERTICALMENTE EL REPRODUCTOR -->
@@ -1770,6 +1747,13 @@
       let lastLightUpdate = 0;
       let wasBassHit = false;
 
+      // Variables estáticas del Fader (Zero Reflow durante el toque)
+      let dragTrackTop = 0;
+      let dragMaxTravel = 268; // 290px track - 22px knob
+      let dragKnobHalf = 11;
+      let faderTravelPx = 268;
+      let lastRenderedStep = -1;
+
       // CÁLCULO DE ESCALA OPTIMIZADO
       let lastWindowWidth = 0;
       let lastWindowHeight = 0;
@@ -1804,6 +1788,11 @@
 
         document.documentElement.style.setProperty('--scale', scale);
         turntableViewport.style.height = `${nativeHeight * scale}px`;
+
+        // Medir fader una sola vez en el redimensionado
+        if (faderTrack && faderKnob) {
+          faderTravelPx = (faderTrack.clientHeight || 290) - (faderKnob.clientHeight || 22);
+        }
       }
 
       window.addEventListener('resize', fitTurntableToScreen, { passive: true });
@@ -2051,36 +2040,24 @@
         }
       });
 
+      // ✅ ACTUALIZACIÓN DE FADER DE ALTA VELOCIDAD (ZERO REFLOWS)
       function updateFaderPosition(vol) {
-        const trackHeight = faderTrack.clientHeight;
-        const knobHeight = faderKnob.clientHeight || 22;
-        const maxTravel = trackHeight - knobHeight;
-        const posPx = vol * maxTravel;
-
+        const posPx = vol * faderTravelPx;
         faderKnob.style.bottom = `${posPx}px`;
 
         if (faderFill) {
-          faderFill.style.height = vol === 0 ? '0px' : `${posPx + (knobHeight / 2)}px`;
+          faderFill.style.height = vol === 0 ? '0px' : `${posPx + 11}px`;
         }
 
-        const currentScaleVal = Math.round(vol * 10 * 10) / 10;
-
-        if (vol === 0) {
+        // Actualizar escala solo cuando cambia el valor entero (evita bucles DOM innecesarios)
+        const currentStepVal = Math.round(vol * 5) * 2;
+        if (currentStepVal !== lastRenderedStep) {
+          lastRenderedStep = currentStepVal;
           for (let i = 0; i < scaleSteps.length; i++) {
-            scaleSteps[i].classList.remove('lit-blue');
-            scaleSteps[i].classList.add('lit-red');
-          }
-          return;
-        }
-
-        for (let i = 0; i < scaleSteps.length; i++) {
-          const stepVal = parseFloat(scaleSteps[i].getAttribute('data-val'));
-          if (currentScaleVal < stepVal - 0.05) {
-            scaleSteps[i].classList.remove('lit-blue');
-            scaleSteps[i].classList.add('lit-red');
-          } else {
-            scaleSteps[i].classList.remove('lit-red');
-            scaleSteps[i].classList.add('lit-blue');
+            const stepVal = parseFloat(scaleSteps[i].getAttribute('data-val'));
+            const isLit = (currentStepVal >= stepVal) && (vol > 0);
+            scaleSteps[i].classList.toggle('lit-blue', isLit);
+            scaleSteps[i].classList.toggle('lit-red', !isLit);
           }
         }
       }
@@ -2091,45 +2068,48 @@
         updateFaderPosition(volume);
       }
 
-      function setVolumeFromPosition(clientY) {
-        const trackRect = faderTrack.getBoundingClientRect();
-        const knobRect = faderKnob.getBoundingClientRect();
-        const knobHeight = knobRect.height;
-        const maxTravel = trackRect.height - knobHeight;
-        if (maxTravel <= 0) return;
-
-        let relativeY = clientY - trackRect.top - (knobHeight / 2);
-        let newVol = 1 - (relativeY / maxTravel);
+      // ✅ CÁLCULO DIRECTO MATEMÁTICO SIN CONSULTAR AL NAVEGADOR EN MOVIMIENTO
+      function updateDragVolume(clientY) {
+        const relativeY = clientY - dragTrackTop - dragKnobHalf;
+        const newVol = 1 - (relativeY / dragMaxTravel);
         setVolume(newVol);
       }
 
       function handleStart(e) {
         isDragging = true;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        // Se mide una sola vez al poner el dedo (0 lag en arrastre)
+        const trackRect = faderTrack.getBoundingClientRect();
+        const knobRect = faderKnob.getBoundingClientRect();
+        const knobHeight = knobRect.height || 22;
+
+        dragTrackTop = trackRect.top;
+        dragMaxTravel = trackRect.height - knobHeight;
+        dragKnobHalf = knobHeight * 0.5;
+
         faderKnob.style.transition = 'none';
         if (faderFill) faderFill.style.transition = 'none';
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        setVolumeFromPosition(clientY);
-        e.preventDefault();
+
+        updateDragVolume(clientY);
+        if (e.cancelable) e.preventDefault();
       }
 
       function handleMove(e) {
-        if (isDragging) {
-          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-          setVolumeFromPosition(clientY);
-          e.preventDefault();
-        }
+        if (!isDragging || dragMaxTravel <= 0) return;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        updateDragVolume(clientY);
+        if (e.cancelable) e.preventDefault();
       }
 
       function handleEnd() {
         if (isDragging) {
           isDragging = false;
-          faderKnob.style.transition = 'bottom 0.08s ease-out';
-          if (faderFill) faderFill.style.transition = 'height 0.08s ease-out';
         }
       }
 
       faderContainer.addEventListener('mousedown', handleStart);
-      window.addEventListener('mousemove', handleMove);
+      window.addEventListener('mousemove', handleMove, { passive: false });
       window.addEventListener('mouseup', handleEnd);
 
       faderContainer.addEventListener('touchstart', handleStart, { passive: false });
@@ -2219,9 +2199,9 @@
       updateMarqueeTitle('Castlebul Radio');
 
       window.addEventListener('load', () => {
+        fitTurntableToScreen();
         updateFaderPosition(volume);
         updateAlbumArtBackground();
-        fitTurntableToScreen();
       });
 
       window.addEventListener('pagehide', () => {
